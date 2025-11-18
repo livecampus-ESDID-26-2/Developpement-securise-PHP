@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  php:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    command: php -S 0.0.0.0:8000 -t /app

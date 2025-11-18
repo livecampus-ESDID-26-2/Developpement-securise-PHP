@@ -2,37 +2,22 @@
 
 ## Prérequis
 
-Ce projet nécessite PHP installé sur votre machine.
+Ce projet utilise Docker pour exécuter PHP.
 
-### Installation de PHP
+## Lancement du serveur de développement avec Docker
 
-#### Sur macOS
+### Méthode 1 : Avec Docker Compose (recommandé)
 
-Télécharger et installer Homebrew :
-
-```bash
-curl -o- https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash
-```
-
-Installer et lier PHP 8.4 :
+Pour démarrer le serveur PHP dans un conteneur Docker :
 
 ```bash
-brew install php@8.4
-brew link --force --overwrite php@8.4
-```
-
-#### Sur Windows
-
-Téléchargez PHP depuis [php.net](https://www.php.net/downloads.php) et suivez les instructions d'installation.
-
-## Lancement du serveur de développement
-
-Pour démarrer le serveur PHP intégré, exécutez la commande suivante à la racine du projet :
-
-```bash
-php -S localhost:8000
+docker compose up
 ```
 
 Le serveur sera accessible à l'adresse : [http://localhost:8000](http://localhost:8000)
 
-Pour arrêter le serveur, appuyez sur `Ctrl+C` dans le terminal.
+Pour arrêter le serveur, appuyez sur `Ctrl+C` dans le terminal, puis :
+
+```bash
+docker compose down
+```

@@ -7,9 +7,7 @@
 
 Ce projet utilise Docker pour exécuter PHP.
 
-## Lancement du serveur de développement avec Docker
-
-### Méthode 1 : Avec Docker Compose (recommandé)
+## Lancement du serveur de développement avec Docker Compose
 
 Pour démarrer le serveur PHP dans un conteneur Docker :
 

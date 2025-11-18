@@ -1,5 +1,8 @@
 # Développement Sécurisé PHP
 
+**École :** LiveCampus - ESDID-26.2  
+**Étudiant :** MASIA Antoine
+
 ## Prérequis
 
 Ce projet utilise Docker pour exécuter PHP.

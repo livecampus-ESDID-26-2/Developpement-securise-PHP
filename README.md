@@ -6,7 +6,6 @@
 ## 📋 Description du Projet
 
 Application PHP de gestion de caisse enregistreuse permettant de :
-
 - Calculer automatiquement la monnaie à rendre
 - Optimiser le rendu de monnaie (algorithme glouton)
 - Gérer l'état de la caisse (entrées/sorties)
@@ -35,14 +34,12 @@ app/
 ## ✨ Fonctionnalités
 
 ### 💵 Calcul de Monnaie
-
 - **Algorithme glouton** : Optimise le nombre de billets/pièces à rendre
 - **Valeur préférée** : Option pour privilégier une dénomination spécifique (ex: maximiser les pièces de 1€)
 - **Validation** : Vérifie la disponibilité en caisse
 - **Précision** : Calculs en centimes pour éviter les erreurs de flottants
 
 ### 🎨 Interface Utilisateur
-
 - **Design moderne** : Interface responsive avec dégradés
 - **Images réelles** : Billets et pièces d'euros officiels
 - **Badges visuels** : Mise en évidence de la monnaie à rendre
@@ -53,7 +50,6 @@ app/
   - 🔴 Rouge : Sorties d'argent
 
 ### 📊 Gestion de Caisse
-
 - **État initial** : Affichage de la caisse avant transaction
 - **Nouvel état** : Affichage après transaction avec différences
 - **Comparaison** : Vue avant/après côte à côte
@@ -61,30 +57,26 @@ app/
 ## 🚀 Installation et Utilisation
 
 ### Prérequis
-
 - Docker
 - Docker Compose
 
 ### Démarrage
 
 1. **Cloner le projet** :
-
 ```bash
-git clone [https://github.com/livecampus-ESDID-26-2/Developpement-securise-PHP](https://github.com/livecampus-ESDID-26-2/Developpement-securise-PHP)
+git clone https://github.com/livecampus-ESDID-26-2/Developpement-securise-PHP
 cd Developpement-securise-PHP
 ```
 
 2. **Lancer Docker Compose** :
-
 ```bash
 docker compose up
 ```
 
 3. **Accéder à l'application** :
-   Ouvrir le navigateur à l'adresse : [http://localhost:8000](http://localhost:8000)
+   Ouvrir le navigateur à l'adresse : http://localhost:8000
 
 4. **Arrêter le serveur** :
-
 ```bash
 # Ctrl+C dans le terminal, puis :
 docker compose down
@@ -99,25 +91,23 @@ docker compose down
 
 ## 🔒 Sécurité
 
-- ✅ Validation des entrées côté serveur
-- ✅ Protection contre les injections (`htmlspecialchars()`)
-- ✅ Typage strict des données (`intval()`, `floatval()`)
-- ✅ Vérification de la méthode HTTP (POST uniquement)
-- ✅ Gestion des erreurs
+✅ Validation des entrées côté serveur  
+✅ Protection contre les injections (htmlspecialchars())  
+✅ Typage strict des données (intval(), floatval())  
+✅ Vérification de la méthode HTTP (POST uniquement)  
+✅ Gestion des erreurs
 
 ## 📝 Structure des Constantes
 
 Le fichier `config/config.php` définit :
-
-- `ROOT_PATH` : Chemin vers le dossier app/
-- `BACKEND_PATH` : Chemin vers backend/
-- `VIEWS_PATH` : Chemin vers views/
-- `CONFIG_PATH` : Chemin vers config/
+- `ROOT_PATH` : Chemin vers le dossier `app/`
+- `BACKEND_PATH` : Chemin vers `backend/`
+- `VIEWS_PATH` : Chemin vers `views/`
+- `CONFIG_PATH` : Chemin vers `config/`
 
 ## 🎓 Projet Pédagogique
 
 Ce projet fait partie du module "Développement Sécurisé PHP" et démontre :
-
 - Architecture modulaire
 - Séparation des responsabilités
 - Bonnes pratiques de sécurité PHP

@@ -23,9 +23,16 @@
                         <input type="number" id="montant_donne" name="montant_donne" step="0.01" value="50.00" required>
                     </div>
                     <div class="input-group">
+                        <label for="algorithme">Algorithme de rendu :</label>
+                        <select id="algorithme" name="algorithme" required>
+                            <option value="glouton">Standard - Plus grandes valeurs d'abord (optimal)</option>
+                            <option value="inverse">Inversé - Plus petites valeurs d'abord</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
                         <label for="valeur_preferee">Valeur préférée (optionnel) :</label>
                         <select id="valeur_preferee" name="valeur_preferee">
-                            <option value="">Aucune préférence (algorithme standard)</option>
+                            <option value="">Aucune préférence</option>
                             <optgroup label="Billets">
                                 <?php 
                                 foreach ($monnaie_config as $cle => $config): 
@@ -71,7 +78,7 @@
                     foreach ($monnaie_config as $cle => $config): 
                         if (strpos($cle, 'billet_') === 0):
                     ?>
-                        <div class="caisse-item">
+                        <div class="caisse-item-form">
                             <img src="<?php echo htmlspecialchars($config['img']); ?>" alt="<?php echo htmlspecialchars($config['label']); ?>" class="caisse-img">
                             <label><?php echo $config['label']; ?></label>
                             <input type="number" name="<?php echo $cle; ?>" value="<?php echo $valeurs_initiales[$cle]; ?>" min="0" required>
@@ -90,7 +97,7 @@
                         'piece_1' => 23,
                         'piece_050' => 23,
                         'piece_020' => 80,
-                        'piece_010' => 12,
+                        'piece_010' => 15,
                         'piece_005' => 8,
                         'piece_002' => 45,
                         'piece_001' => 12
@@ -98,7 +105,7 @@
                     foreach ($monnaie_config as $cle => $config): 
                         if (strpos($cle, 'piece_') === 0):
                     ?>
-                        <div class="caisse-item">
+                        <div class="caisse-item-form">
                             <img src="<?php echo htmlspecialchars($config['img']); ?>" alt="<?php echo htmlspecialchars($config['label']); ?>" class="caisse-img">
                             <label><?php echo $config['label']; ?></label>
                             <input type="number" name="<?php echo $cle; ?>" value="<?php echo $valeurs_initiales_pieces[$cle]; ?>" min="0" required>

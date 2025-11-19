@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $montant_du = floatval($_POST['montant_du'] ?? 0);
 $montant_donne = floatval($_POST['montant_donne'] ?? 0);
 $valeur_preferee = $_POST['valeur_preferee'] ?? '';
+$algorithme = $_POST['algorithme'] ?? 'glouton';
 
 // Pour compatibilité avec le code existant
 $valeurs_monnaie = [];
@@ -76,8 +77,15 @@ if (!empty($valeur_preferee) && isset($valeurs_monnaie[$valeur_preferee])) {
     }
 }
 
-// Algorithme glouton pour le reste
-foreach ($valeurs_monnaie as $cle => $valeur) {
+// Préparer les valeurs de monnaie selon l'algorithme choisi
+$valeurs_ordonnees = $valeurs_monnaie;
+if ($algorithme === 'inverse') {
+    // Inverser l'ordre : du plus petit au plus grand
+    $valeurs_ordonnees = array_reverse($valeurs_monnaie, true);
+}
+
+// Algorithme pour le reste (glouton ou inversé)
+foreach ($valeurs_ordonnees as $cle => $valeur) {
     // Si c'est la valeur préférée, on l'a déjà traitée
     if ($cle === $valeur_preferee) {
         continue;

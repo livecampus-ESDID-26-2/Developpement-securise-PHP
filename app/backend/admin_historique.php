@@ -1,39 +1,52 @@
 <?php
 /**
- * Page d'historique complet des transactions
+ * Historique global pour admin
  */
 
-// Chargement de la configuration globale
+// Chargement de la configuration
 if (!defined('ROOT_PATH')) {
     require_once __DIR__ . '/../config/config.php';
 }
 
-// Vérification de la connexion
-requireLogin();
+// Vérification des droits admin
+requireAdmin();
 
 // Récupération de l'utilisateur connecté
-$user = getCurrentUser();
+$admin = getCurrentUser();
 
 // Chargement de la configuration des monnaies
 require_once CONFIG_PATH . '/monnaie.php';
 
-// Récupération de toutes les transactions de l'utilisateur
-$toutes_transactions = getTransactionHistory(0, 0, $user['id']);
-$total_transactions = countTransactions($user['id']);
+// Récupération de toutes les transactions (sans filtre utilisateur)
+$toutes_transactions = getTransactionHistory();
+$total_transactions = countTransactions();
+
+// Récupération de tous les utilisateurs pour afficher leurs noms
+$users = getAllUsers();
+$users_map = [];
+foreach ($users as $user) {
+    $users_map[$user['id']] = $user;
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historique des Transactions</title>
+    <title>Historique Global - Admin</title>
     <link rel="stylesheet" href="../views/style.css">
 </head>
 <body>
     <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1>📜 Historique des Transactions</h1>
-            <a href="../index.php" class="btn-retour">← Retour à la caisse</a>
+        <div class="header-bar admin">
+            <div class="header-left">
+                <h1>📊 Historique Global des Transactions</h1>
+                <p class="user-info">Admin: <strong><?php echo htmlspecialchars($admin['email']); ?></strong></p>
+            </div>
+            <div class="header-right">
+                <a href="admin_dashboard.php" class="btn-historique">← Dashboard</a>
+                <a href="auth_logout.php" class="btn-logout">🚪 Déconnexion</a>
+            </div>
         </div>
 
         <div class="stats-bar">
@@ -53,7 +66,9 @@ $total_transactions = countTransactions($user['id']);
 
         <?php if ($toutes_transactions && count($toutes_transactions) > 0): ?>
         <div class="historique-complet">
-            <?php foreach ($toutes_transactions as $index => $transaction): ?>
+            <?php foreach ($toutes_transactions as $transaction): 
+                $user = $users_map[$transaction['user_id']] ?? null;
+            ?>
             <div class="transaction-detail">
                 <div class="transaction-detail-header">
                     <div class="header-left">
@@ -61,6 +76,11 @@ $total_transactions = countTransactions($user['id']);
                         <span class="transaction-date">
                             📅 <?php echo date('d/m/Y à H:i:s', strtotime($transaction['transaction_date'])); ?>
                         </span>
+                        <?php if ($user): ?>
+                        <span class="user-badge">
+                            👤 <?php echo htmlspecialchars($user['email']); ?>
+                        </span>
+                        <?php endif; ?>
                     </div>
                     <div class="header-right">
                         <span class="badge-algo <?php echo $transaction['algorithme']; ?>">
@@ -117,8 +137,7 @@ $total_transactions = countTransactions($user['id']);
         </div>
         <?php else: ?>
         <div class="empty-state">
-            <p>📭 Aucune transaction enregistrée pour le moment.</p>
-            <a href="../index.php" class="btn-primary">Effectuer une première transaction</a>
+            <p>📭 Aucune transaction enregistrée.</p>
         </div>
         <?php endif; ?>
     </div>

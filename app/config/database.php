@@ -134,19 +134,31 @@ function saveTransactionHistory(array $transactionData): bool {
  * Récupérer l'historique des transactions
  * @param int $limit Nombre de transactions à récupérer (0 = toutes)
  * @param int $offset Décalage pour la pagination
+ * @param int|null $userId ID de l'utilisateur (null = tous)
  * @return array|null Liste des transactions ou null si erreur
  */
-function getTransactionHistory(int $limit = 0, int $offset = 0): ?array {
+function getTransactionHistory(int $limit = 0, int $offset = 0, ?int $userId = null): ?array {
     try {
         $pdo = getDbConnection();
         
-        $sql = "SELECT * FROM caisse_history ORDER BY transaction_date DESC";
+        $sql = "SELECT * FROM caisse_history";
+        
+        // Filtrer par utilisateur si spécifié
+        if ($userId !== null) {
+            $sql .= " WHERE user_id = :user_id";
+        }
+        
+        $sql .= " ORDER BY transaction_date DESC";
         
         if ($limit > 0) {
             $sql .= " LIMIT :limit OFFSET :offset";
         }
         
         $stmt = $pdo->prepare($sql);
+        
+        if ($userId !== null) {
+            $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        }
         
         if ($limit > 0) {
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
@@ -172,17 +184,63 @@ function getTransactionHistory(int $limit = 0, int $offset = 0): ?array {
 
 /**
  * Compter le nombre total de transactions
+ * @param int|null $userId ID de l'utilisateur (null = tous)
  * @return int Nombre de transactions
  */
-function countTransactions(): int {
+function countTransactions(?int $userId = null): int {
     try {
         $pdo = getDbConnection();
-        $stmt = $pdo->query("SELECT COUNT(*) as total FROM caisse_history");
+        
+        $sql = "SELECT COUNT(*) as total FROM caisse_history";
+        
+        if ($userId !== null) {
+            $sql .= " WHERE user_id = :user_id";
+        }
+        
+        $stmt = $pdo->prepare($sql);
+        
+        if ($userId !== null) {
+            $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        }
+        
+        $stmt->execute();
         $result = $stmt->fetch();
         return $result ? (int)$result['total'] : 0;
     } catch (PDOException $e) {
         error_log("Erreur lors du comptage des transactions : " . $e->getMessage());
         return 0;
+    }
+}
+
+/**
+ * Récupérer tous les utilisateurs
+ * @return array|null Liste des utilisateurs ou null si erreur
+ */
+function getAllUsers(): ?array {
+    try {
+        $pdo = getDbConnection();
+        $stmt = $pdo->query("SELECT id, email, role, created_at FROM users ORDER BY created_at DESC");
+        return $stmt->fetchAll();
+    } catch (PDOException $e) {
+        error_log("Erreur lors de la récupération des utilisateurs : " . $e->getMessage());
+        return null;
+    }
+}
+
+/**
+ * Récupérer un utilisateur par ID
+ * @param int $userId ID de l'utilisateur
+ * @return array|null Informations de l'utilisateur ou null
+ */
+function getUserById(int $userId): ?array {
+    try {
+        $pdo = getDbConnection();
+        $stmt = $pdo->prepare("SELECT id, email, role, created_at FROM users WHERE id = :id");
+        $stmt->execute(['id' => $userId]);
+        return $stmt->fetch() ?: null;
+    } catch (PDOException $e) {
+        error_log("Erreur lors de la récupération de l'utilisateur : " . $e->getMessage());
+        return null;
     }
 }
 

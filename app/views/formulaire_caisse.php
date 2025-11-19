@@ -8,9 +8,15 @@
 </head>
 <body>
     <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1>💰 Système de Caisse Enregistreuse</h1>
-            <a href="backend/historique.php" class="btn-historique">📜 Historique complet (<?php echo $total_transactions; ?>)</a>
+        <div class="header-bar">
+            <div class="header-left">
+                <h1>💰 Système de Caisse Enregistreuse</h1>
+                <p class="user-info">👤 Connecté en tant que: <strong><?php echo htmlspecialchars($user['email']); ?></strong></p>
+            </div>
+            <div class="header-right">
+                <a href="backend/historique.php" class="btn-historique">📜 Historique (<?php echo $total_transactions; ?>)</a>
+                <a href="backend/auth_logout.php" class="btn-logout">🚪 Déconnexion</a>
+            </div>
         </div>
 
         <form method="POST" action="backend/traitement_caisse.php">

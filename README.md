@@ -5,60 +5,100 @@
 
 ## 📋 Description du Projet
 
-Application PHP de gestion de caisse enregistreuse permettant de :
-- Calculer automatiquement la monnaie à rendre
-- Optimiser le rendu de monnaie (algorithme glouton)
-- Gérer l'état de la caisse (entrées/sorties)
-- Afficher visuellement les billets et pièces
+Application PHP de gestion de caisse enregistreuse avec authentification multi-utilisateurs permettant de :
+- **Système d'authentification** : Login sécurisé avec gestion des rôles (utilisateur/administrateur)
+- **Calcul automatique** : Calculer automatiquement la monnaie à rendre
+- **Algorithmes multiples** : Optimiser le rendu (algorithme glouton standard ou inversé)
+- **Gestion personnalisée** : Chaque utilisateur gère sa propre caisse
+- **Historique détaillé** : Suivi complet des transactions par utilisateur
+- **Dashboard Admin** : Vue d'ensemble de tous les utilisateurs et leurs activités
+- **Affichage visuel** : Interface moderne avec images réelles de billets et pièces
 
 ## 🏗️ Architecture du Projet
 
 ```
 app/
-├── index.php                          # Point d'entrée principal
+├── index.php                          # Point d'entrée principal avec vérification auth
 │
 ├── config/                            # Configuration
-│   ├── config.php                     # Chemins et constantes globales
+│   ├── config.php                     # Chemins, constantes et démarrage session
+│   ├── auth.php                       # Fonctions d'authentification et middleware
 │   ├── database.php                   # Connexion et fonctions base de données
 │   └── monnaie.php                    # Configuration billets/pièces avec images
 │
 ├── backend/                           # Logique métier (PHP)
-│   ├── systeme_caisse.php            # Page principale de la caisse
-│   └── traitement_caisse.php         # Calculs et traitement des transactions
+│   ├── auth_login.php                 # Traitement de la connexion
+│   ├── auth_logout.php                # Déconnexion
+│   ├── systeme_caisse.php             # Page principale de la caisse (user)
+│   ├── traitement_caisse.php          # Calculs et traitement des transactions
+│   ├── historique.php                 # Historique des transactions de l'utilisateur
+│   ├── admin_dashboard.php            # Dashboard administrateur
+│   ├── admin_historique.php           # Historique global (admin)
+│   └── admin_user_detail.php          # Détail d'un utilisateur (admin)
 │
 └── views/                             # Interface utilisateur (HTML/CSS)
-    ├── formulaire_caisse.php         # Formulaire de saisie
-    ├── resultat_caisse.php           # Affichage des résultats
-    └── style.css                      # Styles CSS
+    ├── login.php                      # Page de connexion
+    ├── formulaire_caisse.php          # Formulaire de saisie caisse
+    ├── resultat_caisse.php            # Affichage des résultats
+    └── style.css                       # Styles CSS (1150+ lignes)
 
 database/
-└── init.sql                           # Script d'initialisation de la base de données
+└── init.sql                           # Script d'initialisation de la BDD
 ```
 
 ## ✨ Fonctionnalités
 
+### 🔐 Système d'Authentification
+- **Login sécurisé** : Page de connexion avec validation des identifiants
+- **Gestion des sessions** : Sessions PHP sécurisées avec vérification automatique
+- **Rôles utilisateurs** : 
+  - 👤 **Utilisateur** : Accès à sa caisse personnelle et son historique
+  - 👨‍💼 **Administrateur** : Vue d'ensemble de tous les utilisateurs et leurs activités
+- **Middleware** : Protection automatique des pages selon les droits d'accès
+- **Déconnexion** : Bouton de déconnexion sur toutes les pages
+
 ### 💵 Calcul de Monnaie
-- **Algorithme glouton** : Optimise le nombre de billets/pièces à rendre
+- **Algorithme glouton (standard)** : Optimise le nombre de billets/pièces à rendre (du plus grand au plus petit)
+- **Algorithme inversé** : Rendu de monnaie du plus petit au plus grand
 - **Valeur préférée** : Option pour privilégier une dénomination spécifique (ex: maximiser les pièces de 1€)
 - **Validation** : Vérifie la disponibilité en caisse
 - **Précision** : Calculs en centimes pour éviter les erreurs de flottants
 
 ### 🎨 Interface Utilisateur
-- **Design moderne** : Interface responsive avec dégradés
-- **Images réelles** : Billets et pièces d'euros officiels
+- **Design moderne** : Interface responsive avec dégradés et animations
+- **Images réelles** : Billets et pièces d'euros officiels de la BCE
 - **Badges visuels** : Mise en évidence de la monnaie à rendre
 - **Codes couleurs** :
-  - 🔵 Bleu/Violet : Monnaie rendue (standard)
-  - 🟠 Orange : Valeur préférée (avec animation)
+  - 🔵 Bleu/Violet : Interface utilisateur standard
+  - 🟠 Orange : Dashboard administrateur
   - 🟢 Vert : Entrées d'argent
   - 🔴 Rouge : Sorties d'argent
+- **Responsive** : Compatible desktop, tablette et mobile
 
-### 📊 Gestion de Caisse
+### 📊 Gestion de Caisse (Utilisateur)
+- **Caisse personnelle** : Chaque utilisateur gère sa propre caisse
 - **État initial** : Affichage de la caisse avant transaction
 - **Nouvel état** : Affichage après transaction avec différences
 - **Comparaison** : Vue avant/après côte à côte
-- **Persistance** : Sauvegarde de l'état de la caisse en base de données
-- **Historique** : Enregistrement de toutes les transactions
+- **Persistance** : Sauvegarde automatique de l'état de la caisse en base de données
+- **Historique personnel** : 
+  - Aperçu des 5 dernières transactions sur la page principale
+  - Page dédiée avec l'historique complet de l'utilisateur
+  - Détails visuels avec images des billets/pièces rendus
+  - Statistiques (nombre de transactions, total rendu)
+
+### 👨‍💼 Dashboard Administrateur
+- **Vue d'ensemble** : Liste de tous les utilisateurs (hors admins) avec leurs statistiques
+- **Statistiques globales** : 
+  - Nombre total d'utilisateurs
+  - Nombre total de transactions
+  - Total des montants rendus
+- **Par utilisateur** :
+  - Nombre de transactions effectuées
+  - 3 dernières transactions en aperçu
+  - Accès au détail complet
+- **Historique global** : Vue de toutes les transactions de tous les utilisateurs
+- **Détail utilisateur** : Historique complet et statistiques d'un utilisateur spécifique
 
 ## 🚀 Installation et Utilisation
 
@@ -110,6 +150,8 @@ docker compose up
 
 5. **Accéder à l'application** :
    Ouvrir le navigateur à l'adresse : http://localhost:8000
+   
+   Vous serez redirigé vers la page de connexion.
 
 6. **Arrêter le serveur** :
 ```bash
@@ -127,14 +169,19 @@ docker compose down
 
 ## 🔒 Sécurité
 
-✅ Validation des entrées côté serveur  
-✅ Protection contre les injections SQL (requêtes préparées PDO)  
-✅ Protection contre les injections XSS (htmlspecialchars())  
-✅ Typage strict des données (intval(), floatval())  
-✅ Vérification de la méthode HTTP (POST uniquement)  
-✅ Variables d'environnement pour les identifiants sensibles  
-✅ Fichier `.env` exclu du contrôle de version  
-✅ Gestion des erreurs avec logging
+✅ **Authentification** : Système de login avec sessions PHP sécurisées  
+✅ **Gestion des rôles** : Middleware pour protéger les pages selon les droits d'accès  
+✅ **Injections SQL** : Protection via requêtes préparées PDO  
+✅ **Injections XSS** : Échappement des données avec htmlspecialchars()  
+✅ **Typage strict** : Validation et typage des données (intval(), floatval())  
+✅ **Méthodes HTTP** : Vérification POST uniquement pour les formulaires  
+✅ **Variables d'environnement** : Identifiants sensibles dans fichier .env  
+✅ **Contrôle de version** : Fichier .env exclu de Git via .gitignore  
+✅ **Gestion des erreurs** : Logging côté serveur (error_log)  
+✅ **Sessions sécurisées** : Démarrage automatique et destruction propre
+
+⚠️ **Note** : Les mots de passe en base de données sont en clair pour la démonstration. 
+En production, utiliser `password_hash()` et `password_verify()`.
 
 ## 📝 Configuration
 
@@ -147,20 +194,68 @@ docker compose down
 ### Base de Données
 
 **Tables créées automatiquement** :
-- `users` : Utilisateurs du système (avec rôles user/admin)
-- `caisse_state` : État actuel de la caisse (dernier enregistrement = état actuel)
+- `users` : Utilisateurs du système avec rôles (user/admin)
+  - Colonnes : id, email, password, role, created_at
+- `caisse_state` : État de la caisse à chaque transaction
+  - Contient tous les billets et pièces (15 colonnes)
+  - Le dernier enregistrement = état actuel de la caisse
 - `caisse_history` : Historique complet des transactions
+  - Stocke : montants, algorithme, valeur préférée, user_id
+  - JSON : monnaie_rendue, caisse_avant, caisse_apres
+  - Permet le filtrage par utilisateur
 
-**Utilisateurs par défaut** :
-- `user1@cash.com` / `12345` (utilisateur)
-- `user2@cash.com` / `12345` (utilisateur)
-- `admin@cash.com` / `123456` (administrateur)
+**Utilisateurs de démonstration** :
+| Email | Mot de passe | Rôle | Accès |
+|-------|--------------|------|-------|
+| `user1@cash.com` | `12345` | 👤 Utilisateur | Caisse + Historique personnel |
+| `user2@cash.com` | `12345` | 👤 Utilisateur | Caisse + Historique personnel |
+| `admin@cash.com` | `123456` | 👨‍💼 Admin | Dashboard + Vue d'ensemble |
+
+**État initial de la caisse** :
+- 1×500€, 2×200€, 2×100€, 4×50€, 1×20€, 23×10€, 0×5€
+- 34×2€, 23×1€, 23×0.50€, 80×0.20€, 12×0.10€, 8×0.05€, 45×0.02€, 12×0.01€
+
+## 📸 Captures d'écran
+
+### Page de Connexion
+Interface moderne avec comptes de démonstration affichés
+
+### Interface Utilisateur
+- Formulaire de caisse avec état actuel
+- Choix d'algorithme (Standard / Inversé)
+- Valeur préférée optionnelle
+- Aperçu des 5 dernières transactions
+- Bouton d'historique complet
+
+### Dashboard Administrateur
+- Vue d'ensemble de tous les utilisateurs
+- Statistiques globales
+- 3 dernières transactions par utilisateur
+- Accès aux détails complets
 
 ## 🎓 Projet Pédagogique
 
-Ce projet fait partie du module "Développement Sécurisé PHP" et démontre :
-- Architecture modulaire
-- Séparation des responsabilités
-- Bonnes pratiques de sécurité PHP
-- Algorithmes d'optimisation
-- Interface utilisateur moderne
+Ce projet fait partie du module "**Développement Sécurisé PHP**" à **LiveCampus - ESDID-26.2** et démontre :
+
+### Compétences techniques
+- ✅ **Architecture MVC** : Séparation stricte des responsabilités
+- ✅ **Sécurité PHP** : Protection contre les vulnérabilités courantes
+- ✅ **Base de données** : MySQL avec PDO et requêtes préparées
+- ✅ **Gestion de sessions** : Authentification et autorisation
+- ✅ **Algorithmes** : Implémentation de plusieurs stratégies de calcul
+- ✅ **Docker** : Conteneurisation complète de l'application
+
+### Fonctionnalités avancées
+- 🔐 Système d'authentification multi-utilisateurs
+- 👥 Gestion des rôles (utilisateur/administrateur)
+- 📊 Historique avec filtrage par utilisateur
+- 💾 Persistance des données en base
+- 🎨 Interface moderne et responsive
+- 📈 Dashboard administrateur avec statistiques
+
+### Bonnes pratiques
+- Code commenté et structuré
+- Variables d'environnement pour la configuration sensible
+- Gestion des erreurs avec logging
+- Validation des données
+- Design moderne et UX soignée

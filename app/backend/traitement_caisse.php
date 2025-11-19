@@ -9,6 +9,12 @@ if (!defined('ROOT_PATH')) {
     require_once __DIR__ . '/../config/config.php';
 }
 
+// Vérification de la connexion
+requireLogin();
+
+// Récupération de l'utilisateur connecté
+$user = getCurrentUser();
+
 // Chargement de la configuration des monnaies
 require_once CONFIG_PATH . '/monnaie.php';
 
@@ -141,7 +147,7 @@ if (!$impossible && empty($erreurs)) {
         'monnaie_rendue' => $monnaie_a_rendre,
         'caisse_avant' => $caisse_actuelle,
         'caisse_apres' => $nouvelle_caisse,
-        'user_id' => null // TODO: Ajouter la gestion des utilisateurs connectés
+        'user_id' => $user['id']
     ];
     $historique_reussi = saveTransactionHistory($transaction_data);
     

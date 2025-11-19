@@ -12,12 +12,18 @@ if (!defined('ROOT_PATH')) {
 // Chargement de la configuration des monnaies
 require_once CONFIG_PATH . '/monnaie.php';
 
+// Vérification de la connexion
+requireLogin();
+
+// Récupération des informations de l'utilisateur connecté
+$user = getCurrentUser();
+
 // Récupération de l'état de la caisse depuis la base de données
 $caisse_depuis_db = getCaisseState();
 
-// Récupération des 5 dernières transactions pour l'aperçu
-$dernieres_transactions = getTransactionHistory(5);
-$total_transactions = countTransactions();
+// Récupération des 5 dernières transactions de l'utilisateur pour l'aperçu
+$dernieres_transactions = getTransactionHistory(5, 0, $user['id']);
+$total_transactions = countTransactions($user['id']);
 
 // Si l'état existe en DB, l'utiliser pour les valeurs par défaut
 if ($caisse_depuis_db) {

@@ -127,6 +127,30 @@ if (!$impossible && empty($erreurs)) {
             $montant_a_ajouter -= ($nombre * $valeur);
         }
     }
+    
+    // Sauvegarde de l'état de la caisse en base de données
+    $sauvegarde_reussie = saveCaisseState($nouvelle_caisse);
+    
+    // Enregistrement de la transaction dans l'historique
+    $transaction_data = [
+        'montant_du' => $montant_du,
+        'montant_donne' => $montant_donne,
+        'montant_rendu' => $montant_a_rendre_centimes / 100,
+        'algorithme' => $algorithme,
+        'valeur_preferee' => $valeur_preferee,
+        'monnaie_rendue' => $monnaie_a_rendre,
+        'caisse_avant' => $caisse_actuelle,
+        'caisse_apres' => $nouvelle_caisse,
+        'user_id' => null // TODO: Ajouter la gestion des utilisateurs connectés
+    ];
+    $historique_reussi = saveTransactionHistory($transaction_data);
+    
+    if (!$sauvegarde_reussie) {
+        error_log("Échec de la sauvegarde de l'état de la caisse en base de données");
+    }
+    if (!$historique_reussi) {
+        error_log("Échec de l'enregistrement de la transaction dans l'historique");
+    }
 }
 
 // Inclusion du template de résultat

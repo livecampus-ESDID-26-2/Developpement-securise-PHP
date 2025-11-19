@@ -8,7 +8,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>💰 Système de Caisse Enregistreuse</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>💰 Système de Caisse Enregistreuse</h1>
+            <a href="backend/historique.php" class="btn-historique">📜 Historique complet (<?php echo $total_transactions; ?>)</a>
+        </div>
 
         <form method="POST" action="backend/traitement_caisse.php">
             <div class="section">
@@ -66,15 +69,7 @@
                 <h3 style="color: #666; margin-bottom: 15px;">Billets</h3>
                 <div class="caisse-grid">
                     <?php 
-                    $valeurs_initiales = [
-                        'billet_500' => 1,
-                        'billet_200' => 2,
-                        'billet_100' => 2,
-                        'billet_50' => 4,
-                        'billet_20' => 1,
-                        'billet_10' => 23,
-                        'billet_5' => 0
-                    ];
+                    // Les valeurs $valeurs_initiales sont définies dans systeme_caisse.php
                     foreach ($monnaie_config as $cle => $config): 
                         if (strpos($cle, 'billet_') === 0):
                     ?>
@@ -92,16 +87,7 @@
                 <h3 style="color: #666; margin: 20px 0 15px 0;">Pièces</h3>
                 <div class="caisse-grid">
                     <?php 
-                    $valeurs_initiales_pieces = [
-                        'piece_2' => 34,
-                        'piece_1' => 23,
-                        'piece_050' => 23,
-                        'piece_020' => 80,
-                        'piece_010' => 15,
-                        'piece_005' => 8,
-                        'piece_002' => 45,
-                        'piece_001' => 12
-                    ];
+                    // Les valeurs $valeurs_initiales_pieces sont définies dans systeme_caisse.php
                     foreach ($monnaie_config as $cle => $config): 
                         if (strpos($cle, 'piece_') === 0):
                     ?>
@@ -119,6 +105,47 @@
 
             <button type="submit" class="submit-btn">Calculer la Monnaie</button>
         </form>
+
+        <?php if ($dernieres_transactions && count($dernieres_transactions) > 0): ?>
+        <div class="section" style="margin-top: 30px;">
+            <h2 class="section-title">📊 Dernières Transactions</h2>
+            <div class="historique-apercu">
+                <?php foreach ($dernieres_transactions as $transaction): ?>
+                <div class="transaction-card">
+                    <div class="transaction-header">
+                        <span class="transaction-date">
+                            📅 <?php echo date('d/m/Y à H:i', strtotime($transaction['transaction_date'])); ?>
+                        </span>
+                        <span class="transaction-algo">
+                            <?php echo $transaction['algorithme'] === 'glouton' ? '⚡ Standard' : '🔄 Inversé'; ?>
+                        </span>
+                    </div>
+                    <div class="transaction-body">
+                        <div class="transaction-montants">
+                            <div class="montant-item">
+                                <span class="label">Dû:</span>
+                                <span class="value"><?php echo number_format($transaction['montant_du'], 2, ',', ' '); ?>€</span>
+                            </div>
+                            <div class="montant-item">
+                                <span class="label">Donné:</span>
+                                <span class="value"><?php echo number_format($transaction['montant_donne'], 2, ',', ' '); ?>€</span>
+                            </div>
+                            <div class="montant-item rendu">
+                                <span class="label">Rendu:</span>
+                                <span class="value"><?php echo number_format($transaction['montant_rendu'], 2, ',', ' '); ?>€</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php if ($total_transactions > 5): ?>
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="backend/historique.php" class="btn-voir-plus">Voir toutes les transactions →</a>
+            </div>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
     </div>
 </body>
 </html>

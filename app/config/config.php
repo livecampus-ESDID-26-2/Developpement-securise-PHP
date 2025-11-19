@@ -12,3 +12,6 @@ define('BACKEND_PATH', ROOT_PATH . '/backend');
 define('VIEWS_PATH', ROOT_PATH . '/views');
 define('CONFIG_PATH', ROOT_PATH . '/config');
 
+// Chargement des fonctions de base de données
+require_once CONFIG_PATH . '/database.php';
+

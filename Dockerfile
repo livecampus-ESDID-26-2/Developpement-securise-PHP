@@ -1,5 +1,8 @@
 FROM php:8.4-cli
 
+# Installation des extensions PDO MySQL
+RUN docker-php-ext-install pdo pdo_mysql
+
 WORKDIR /app
 
 COPY ./app /app

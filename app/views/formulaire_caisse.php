@@ -22,6 +22,34 @@
                         <label for="montant_donne">Montant donné (€) :</label>
                         <input type="number" id="montant_donne" name="montant_donne" step="0.01" value="50.00" required>
                     </div>
+                    <div class="input-group">
+                        <label for="valeur_preferee">Valeur préférée (optionnel) :</label>
+                        <select id="valeur_preferee" name="valeur_preferee">
+                            <option value="">Aucune préférence (algorithme standard)</option>
+                            <optgroup label="Billets">
+                                <?php 
+                                foreach ($monnaie_config as $cle => $config): 
+                                    if (strpos($cle, 'billet_') === 0):
+                                ?>
+                                    <option value="<?php echo $cle; ?>"><?php echo $config['label']; ?></option>
+                                <?php 
+                                    endif;
+                                endforeach; 
+                                ?>
+                            </optgroup>
+                            <optgroup label="Pièces">
+                                <?php 
+                                foreach ($monnaie_config as $cle => $config): 
+                                    if (strpos($cle, 'piece_') === 0):
+                                ?>
+                                    <option value="<?php echo $cle; ?>"><?php echo $config['label']; ?></option>
+                                <?php 
+                                    endif;
+                                endforeach; 
+                                ?>
+                            </optgroup>
+                        </select>
+                    </div>
                 </div>
             </div>
 

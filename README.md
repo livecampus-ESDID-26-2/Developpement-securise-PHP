@@ -37,6 +37,7 @@ app/
 ### 💵 Calcul de Monnaie
 
 - **Algorithme glouton** : Optimise le nombre de billets/pièces à rendre
+- **Valeur préférée** : Option pour privilégier une dénomination spécifique (ex: maximiser les pièces de 1€)
 - **Validation** : Vérifie la disponibilité en caisse
 - **Précision** : Calculs en centimes pour éviter les erreurs de flottants
 
@@ -46,6 +47,8 @@ app/
 - **Images réelles** : Billets et pièces d'euros officiels
 - **Badges visuels** : Mise en évidence de la monnaie à rendre
 - **Codes couleurs** :
+  - 🔵 Bleu/Violet : Monnaie rendue (standard)
+  - 🟠 Orange : Valeur préférée (avec animation)
   - 🟢 Vert : Entrées d'argent
   - 🔴 Rouge : Sorties d'argent
 

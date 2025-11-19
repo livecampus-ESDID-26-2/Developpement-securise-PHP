@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // Récupération des données du formulaire
 $montant_du = floatval($_POST['montant_du'] ?? 0);
 $montant_donne = floatval($_POST['montant_donne'] ?? 0);
+$valeur_preferee = $_POST['valeur_preferee'] ?? '';
 
 // Pour compatibilité avec le code existant
 $valeurs_monnaie = [];
@@ -50,13 +51,37 @@ if ($montant_donne < $montant_du) {
     $erreurs[] = "Le montant donné (" . number_format($montant_donne, 2, ',', ' ') . "€) est insuffisant pour payer " . number_format($montant_du, 2, ',', ' ') . "€.";
 }
 
-// Calcul de la monnaie à rendre (algorithme glouton)
+// Calcul de la monnaie à rendre (algorithme avec préférence)
 $monnaie_a_rendre = [];
 $montant_restant = $montant_a_rendre_centimes;
 $impossible = false;
 
+// Initialiser tous les compteurs à 0
 foreach ($valeurs_monnaie as $cle => $valeur) {
     $monnaie_a_rendre[$cle] = 0;
+}
+
+// Si une valeur préférée est spécifiée, essayer de maximiser son utilisation
+if (!empty($valeur_preferee) && isset($valeurs_monnaie[$valeur_preferee])) {
+    $valeur_pref_centimes = $valeurs_monnaie[$valeur_preferee];
+    
+    // Calculer combien on peut utiliser de la valeur préférée
+    if ($montant_restant >= $valeur_pref_centimes && $caisse_actuelle[$valeur_preferee] > 0) {
+        $nombre_max_necessaire = intval($montant_restant / $valeur_pref_centimes);
+        $nombre_disponible = $caisse_actuelle[$valeur_preferee];
+        $nombre_a_utiliser = min($nombre_max_necessaire, $nombre_disponible);
+        
+        $monnaie_a_rendre[$valeur_preferee] = $nombre_a_utiliser;
+        $montant_restant -= ($nombre_a_utiliser * $valeur_pref_centimes);
+    }
+}
+
+// Algorithme glouton pour le reste
+foreach ($valeurs_monnaie as $cle => $valeur) {
+    // Si c'est la valeur préférée, on l'a déjà traitée
+    if ($cle === $valeur_preferee) {
+        continue;
+    }
     
     if ($montant_restant >= $valeur && $caisse_actuelle[$cle] > 0) {
         $nombre_max_necessaire = intval($montant_restant / $valeur);

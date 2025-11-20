@@ -199,6 +199,20 @@ docker compose up
 docker compose down
 ```
 
+### Réinitialisation de la base de données
+
+Si vous avez déjà lancé l'application avant la mise en place du hashage des mots de passe, vous devez réinitialiser la base de données :
+
+```bash
+# Arrêter les conteneurs et supprimer les volumes
+docker compose down -v
+
+# Relancer l'application (la base sera recréée avec les mots de passe hashés)
+docker compose up
+```
+
+Après cette opération, tous les mots de passe seront correctement hashés en base de données.
+
 ## 🔧 Technologies Utilisées
 
 ### Backend
@@ -225,6 +239,7 @@ docker compose down
 
 ✅ **Authentification** : Système de login avec sessions PHP sécurisées  
 ✅ **Gestion des rôles** : Middleware pour protéger les pages selon les droits d'accès  
+✅ **Hashage des mots de passe** : Utilisation de `password_hash()` et `password_verify()`  
 ✅ **Injections SQL** : Protection via requêtes préparées PDO  
 ✅ **Injections XSS** : Échappement des données avec htmlspecialchars()  
 ✅ **Typage strict** : Validation et typage des données (intval(), floatval())  
@@ -234,8 +249,13 @@ docker compose down
 ✅ **Gestion des erreurs** : Logging côté serveur (error_log)  
 ✅ **Sessions sécurisées** : Démarrage automatique et destruction propre
 
-⚠️ **Note** : Les mots de passe en base de données sont en clair pour la démonstration. 
-En production, utiliser `password_hash()` et `password_verify()`.
+### Sécurité des mots de passe
+
+Les mots de passe sont maintenant **hashés de manière sécurisée** avec l'algorithme bcrypt via `password_hash()` :
+- ✅ Tous les mots de passe sont hashés avec `PASSWORD_DEFAULT` (bcrypt)
+- ✅ Vérification sécurisée avec `password_verify()`
+- ✅ Les comptes de démonstration utilisent également des mots de passe hashés
+- ✅ Les mots de passe ne sont jamais stockés en clair dans la base de données
 
 ## 📝 Configuration
 

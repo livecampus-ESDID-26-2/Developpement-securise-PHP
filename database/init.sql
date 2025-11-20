@@ -17,11 +17,14 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=INNODB;
 
--- Insertion des utilisateurs par défaut
+-- Insertion des utilisateurs par défaut (mots de passe hashés)
+-- user1@cash.com : mot de passe = 12345
+-- user2@cash.com : mot de passe = 12345
+-- admin@cash.com : mot de passe = 123456
 INSERT INTO users (email, password, role) VALUES
-('user1@cash.com', '12345', 'user'),
-('user2@cash.com', '12345', 'user'),
-('admin@cash.com', '123456', 'admin');
+('user1@cash.com', '$2y$12$6ZmYxDNzbsYfHZsieKUcE.N/ogcqHYaqfO4JTBEg2nDJJxCAc1dAS', 'user'),
+('user2@cash.com', '$2y$12$tTYdqN.pUz1tnS.RFTsOg.lNjBAGGBT0rJicjAyREBG/0Dt8fEc96', 'user'),
+('admin@cash.com', '$2y$12$EcDmJrQJlVZme89r0itkw.G0FMU0y1kxVW5KRAtVbLSpUXbCB6pvq', 'admin');
 
 -- Table pour l'état actuel de la caisse
 CREATE TABLE cash_register_state (

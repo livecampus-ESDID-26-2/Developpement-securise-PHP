@@ -35,9 +35,8 @@ class User extends Model
             return null;
         }
         
-        // NOTE: En production, utiliser password_verify()
-        // if (password_verify($password, $user['password']))
-        if ($user['password'] === $password) {
+        // Vérification sécurisée du mot de passe hashé
+        if (password_verify($password, $user['password'])) {
             // Ne pas retourner le mot de passe
             unset($user['password']);
             return $user;
@@ -73,8 +72,10 @@ class User extends Model
      */
     public function createUser(array $data): ?int
     {
-        // NOTE: En production, hasher le mot de passe
-        // $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        // Hasher le mot de passe de manière sécurisée
+        if (isset($data['password'])) {
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
         
         return $this->create($data);
     }

@@ -8,22 +8,32 @@
 
 <div align="center">
 
-<a href="https://github.com/MasiaAntoine">
-  <img src="https://avatars.githubusercontent.com/u/115811899?v=4" alt="Antoine MASIA" width="100">
-</a>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="https://github.com/Aherbeth">
-  <img src="https://avatars.githubusercontent.com/u/17410092" alt="Alexandre Herbeth" width="100">
-</a>
+<table style="border: none; border-collapse: collapse;">
+  <tr style="border: none;">
+    <td align="center" width="50%" style="border: none;">
+      <a href="https://github.com/MasiaAntoine">
+        <img src="https://avatars.githubusercontent.com/u/115811899?v=4" alt="Antoine MASIA" width="100">
+        <br/>
+        <strong>Antoine MASIA</strong>
+        <br/>
+        <em>Étudiant</em>
+      </a>
+    </td>
+    <td align="center" width="50%" style="border: none;">
+      <a href="https://github.com/Aherbeth">
+        <img src="https://avatars.githubusercontent.com/u/17410092" alt="Alexandre Herbeth" width="100">
+        <br/>
+        <strong>Alexandre Herbeth</strong>
+        <br/>
+        <em>Intervenant</em>
+      </a>
+    </td>
+  </tr>
+</table>
 
 <br>
 
-**Antoine MASIA** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Alexandre Herbeth**  
-_Étudiant_ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _Intervenant_
-
-<br>
-
-_Projet réalisé dans le cadre du module "Développement Sécurisé PHP"_
+<em>Projet réalisé dans le cadre du module "Développement Sécurisé PHP"</em>
 
 </div>
 

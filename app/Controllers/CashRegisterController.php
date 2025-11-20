@@ -6,6 +6,8 @@ use App\Core\Controller;
 use App\Models\CashRegister;
 use App\Models\Currency;
 use App\Models\Transaction;
+use App\Builders\CashRegisterBuilder;
+use App\Entities\CashRegisterState;
 
 /**
  * Contrôleur de gestion de la caisse
@@ -41,51 +43,18 @@ class CashRegisterController extends Controller
         $recent_transactions = $this->transactionModel->getHistory(5, 0, $user['id']);
         $total_transactions = $this->transactionModel->count($user['id']);
         
-        // Préparation des valeurs initiales
+        // Construction de l'état de la caisse avec le pattern Builder
         if ($cash_register_from_db) {
-            $initial_bill_values = [
-                'bill_500' => $cash_register_from_db['bill_500'],
-                'bill_200' => $cash_register_from_db['bill_200'],
-                'bill_100' => $cash_register_from_db['bill_100'],
-                'bill_50' => $cash_register_from_db['bill_50'],
-                'bill_20' => $cash_register_from_db['bill_20'],
-                'bill_10' => $cash_register_from_db['bill_10'],
-                'bill_5' => $cash_register_from_db['bill_5']
-            ];
-            
-            $initial_coin_values = [
-                'coin_2' => $cash_register_from_db['coin_2'],
-                'coin_1' => $cash_register_from_db['coin_1'],
-                'coin_050' => $cash_register_from_db['coin_050'],
-                'coin_020' => $cash_register_from_db['coin_020'],
-                'coin_010' => $cash_register_from_db['coin_010'],
-                'coin_005' => $cash_register_from_db['coin_005'],
-                'coin_002' => $cash_register_from_db['coin_002'],
-                'coin_001' => $cash_register_from_db['coin_001']
-            ];
+            // Créer l'état depuis les données de la base
+            $cashRegisterState = CashRegisterState::fromArray($cash_register_from_db);
         } else {
-            // Valeurs par défaut
-            $initial_bill_values = [
-                'bill_500' => 1,
-                'bill_200' => 2,
-                'bill_100' => 2,
-                'bill_50' => 4,
-                'bill_20' => 1,
-                'bill_10' => 23,
-                'bill_5' => 0
-            ];
-            
-            $initial_coin_values = [
-                'coin_2' => 34,
-                'coin_1' => 23,
-                'coin_050' => 23,
-                'coin_020' => 80,
-                'coin_010' => 12,
-                'coin_005' => 8,
-                'coin_002' => 45,
-                'coin_001' => 12
-            ];
+            // Utiliser les valeurs par défaut via le Builder
+            $cashRegisterState = CashRegisterBuilder::withDefaults()->build();
         }
+        
+        // Préparation des valeurs pour la vue
+        $initial_bill_values = $cashRegisterState->getBills();
+        $initial_coin_values = $cashRegisterState->getCoins();
         
         $this->view('cash_register_form', [
             'user' => $user,

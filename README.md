@@ -152,7 +152,13 @@ app/
 │   ├── Model.php                      # Modèle de base
 │   └── Session.php                    # Gestion des sessions
 │
-├── Models/                            # Modèles (Logique métier et accès données)
+├── Builders/                         # Builders (Patterns de construction)
+│   └── CashRegisterBuilder.php        # Pattern Builder pour construire l'état
+│
+├── Entities/                         # Entités (Objets métier immutables)
+│   └── CashRegisterState.php          # État immutable de la caisse
+│
+├── Models/                            # Modèles (Accès base de données)
 │   ├── User.php                       # Modèle utilisateur (authentification)
 │   ├── CashRegister.php               # Modèle caisse (état, calculs)
 │   ├── Transaction.php                # Modèle transaction (historique)
@@ -204,6 +210,52 @@ Réponse HTTP
 - ✅ Autoloading PSR-4 automatique
 - ✅ URLs propres sans `.php`
 - ✅ Séparation stricte des responsabilités
+
+### Pattern Builder
+
+Le projet implémente le **Pattern Builder** pour construire l'état de la caisse de manière fluide et flexible.
+
+**Classes impliquées :**
+
+- `CashRegisterState` : Classe immutable représentant l'état de la caisse (billets + pièces)
+- `CashRegisterBuilder` : Builder permettant de construire un `CashRegisterState` de manière fluide
+
+**Avantages :**
+
+- ✅ **Lisibilité** : Construction explicite et claire de l'état de la caisse
+- ✅ **Flexibilité** : Plusieurs méthodes de création (par défaut, vide, personnalisée)
+- ✅ **Validation** : Valeurs automatiquement validées (pas de valeurs négatives)
+- ✅ **Immutabilité** : L'objet créé ne peut pas être modifié (garantit la cohérence)
+- ✅ **Testabilité** : Facile à tester et à mocker dans les tests unitaires
+
+**Exemples d'utilisation :**
+
+```php
+use App\Builders\CashRegisterBuilder;
+use App\Entities\CashRegisterState;
+
+// 1. Caisse avec valeurs par défaut
+$cashRegister = CashRegisterBuilder::withDefaults()->build();
+
+// 2. Caisse vide
+$cashRegister = CashRegisterBuilder::empty()->build();
+
+// 3. Construction fluide personnalisée
+$cashRegister = CashRegisterBuilder::create()
+    ->setBill500(2)
+    ->setBill200(5)
+    ->setCoin2(100)
+    ->setCoin1(150)
+    ->build();
+
+// 4. Modifier un état existant
+$newState = CashRegisterBuilder::fromState($initialState)
+    ->add('coin_2', 50)     // Ajouter 50 pièces de 2€
+    ->remove('bill_10', 3)  // Retirer 3 billets de 10€
+    ->build();
+```
+
+**Documentation complète** : Voir [docs/builder-pattern-example.md](docs/builder-pattern-example.md)
 
 ## Fonctionnalités
 
@@ -395,6 +447,7 @@ Après cette opération :
 - **MVC** : Pattern Model-View-Controller
 - **PSR-4** : Autoloading automatique des classes
 - **Singleton** : Pattern pour la connexion BDD
+- **Builder** : Pattern créationnel pour construire l'état de la caisse
 - **Front Controller** : Point d'entrée unique
 - **Routing** : URLs propres et RESTful
 

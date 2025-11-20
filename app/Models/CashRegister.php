@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Core\Model;
+use App\Entities\CashRegisterState;
 
 /**
  * Modèle Caisse - Gestion de l'état de la caisse
@@ -30,13 +31,18 @@ class CashRegister extends Model
     
     /**
      * Sauvegarder l'état de la caisse
-     * @param array $register État de la caisse
+     * @param array|CashRegisterState $register État de la caisse (tableau ou objet CashRegisterState)
      * @param int|null $userId ID de l'utilisateur
      * @return bool True si succès, false sinon
      */
-    public function saveState(array $register, ?int $userId = null): bool
+    public function saveState($register, ?int $userId = null): bool
     {
         try {
+            // Si on reçoit un CashRegisterState, le convertir en tableau
+            if ($register instanceof CashRegisterState) {
+                $register = $register->toArray();
+            }
+            
             $sql = "INSERT INTO {$this->table} (
                 bill_500, bill_200, bill_100, bill_50, bill_20, bill_10, bill_5,
                 coin_2, coin_1, coin_050, coin_020, coin_010, coin_005, coin_002, coin_001,

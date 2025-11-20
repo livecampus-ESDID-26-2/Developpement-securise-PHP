@@ -1,11 +1,12 @@
-# 💰 Système de Caisse Enregistreuse - Développement Sécurisé PHP
+# Système de Caisse Enregistreuse - Développement Sécurisé PHP
 
 **École :** LiveCampus - ESDID-26.2  
 **Étudiant :** MASIA Antoine
 
-## 📋 Description du Projet
+## Description du Projet
 
 Application PHP de gestion de caisse enregistreuse avec authentification multi-utilisateurs permettant de :
+
 - **Système d'authentification** : Login sécurisé avec gestion des rôles (utilisateur/administrateur)
 - **Calcul automatique** : Calculer automatiquement la monnaie à rendre
 - **Algorithmes multiples** : Optimiser le rendu (algorithme glouton standard ou inversé)
@@ -14,13 +15,84 @@ Application PHP de gestion de caisse enregistreuse avec authentification multi-u
 - **Dashboard Admin** : Vue d'ensemble de tous les utilisateurs et leurs activités
 - **Affichage visuel** : Interface moderne avec images réelles de billets et pièces
 
-## 🏗️ Architecture du Projet
+## Sommaire
 
-### 🛡️ Architecture de Sécurité
+- [Description du Projet](#description-du-projet)
+- [Captures d'écran](#captures-décran)
+- [Architecture du Projet](#architecture-du-projet)
+  - [Architecture de Sécurité](#architecture-de-sécurité)
+  - [Architecture MVC](#architecture-mvc-model-view-controller)
+  - [Flux de l'application MVC](#flux-de-lapplication-mvc)
+- [Fonctionnalités](#fonctionnalités)
+  - [Système d'Authentification](#système-dauthentification)
+  - [Calcul de Monnaie](#calcul-de-monnaie)
+  - [Interface Utilisateur](#interface-utilisateur)
+  - [Gestion de Caisse (Utilisateur)](#gestion-de-caisse-utilisateur)
+  - [Dashboard Administrateur](#dashboard-administrateur)
+- [Installation et Utilisation](#installation-et-utilisation)
+  - [Prérequis](#prérequis)
+  - [Configuration](#configuration)
+  - [Démarrage](#démarrage)
+  - [Réinitialisation de la base de données](#réinitialisation-de-la-base-de-données)
+- [Technologies Utilisées](#technologies-utilisées)
+- [Sécurité](#sécurité)
+- [Configuration](#configuration-1)
+- [Projet Pédagogique](#projet-pédagogique)
+
+## Captures d'écran
+
+### Page de connexion
+
+![Page de connexion](/docs/screenshots/login.png)
+
+_Interface de connexion sécurisée avec gestion des rôles utilisateur/administrateur_
+
+### Interface de Caisse - Formulaire de Transaction
+
+![Formulaire de caisse](/docs/screenshots/cash-register-form.png)
+
+_Formulaire de saisie avec montant dû, montant reçu et choix de l'algorithme de rendu_
+
+### Résultat de Transaction - Affichage de la Monnaie
+
+![Résultat de transaction](/docs/screenshots/cash-register-result.png)
+
+_Affichage visuel de la monnaie à rendre avec images réelles des billets et pièces, état de la caisse avant/après_
+
+### Historique Utilisateur
+
+![Historique utilisateur](/docs/screenshots/user-history.png)
+
+_Historique complet des transactions de l'utilisateur avec détails visuels et statistiques_
+
+### Dashboard Administrateur
+
+![Dashboard admin](/docs/screenshots/admin-dashboard.png)
+
+_Vue d'ensemble de tous les utilisateurs avec statistiques globales et accès rapide aux détails_
+
+### Historique Global (Admin)
+
+![Historique global](/docs/screenshots/admin-history.png)
+
+_Vue complète de toutes les transactions effectuées par tous les utilisateurs_
+
+### Détail Utilisateur (Admin)
+
+![Détail utilisateur](/docs/screenshots/admin-user-detail.png)
+
+_Statistiques et historique complet d'un utilisateur spécifique depuis le dashboard administrateur_
+
+---
+
+## Architecture du Projet
+
+### Architecture de Sécurité
 
 Le projet implémente une **architecture de sécurité en profondeur** avec plusieurs couches de protection.
 
 **Principe clé** : Séparation des privilèges au niveau de la base de données
+
 - 👤 `cash_user` : Droits limités (SELECT, INSERT, UPDATE) → Utilisé par défaut
 - 👨‍💼 `cash_admin` : Tous les droits → Utilisé uniquement pour les opérations sensibles
 
@@ -89,30 +161,34 @@ Réponse HTTP
 ```
 
 **Caractéristiques :**
+
 - ✅ Point d'entrée unique (`index.php`)
 - ✅ Autoloading PSR-4 automatique
 - ✅ URLs propres sans `.php`
 - ✅ Séparation stricte des responsabilités
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 
-### 🔐 Système d'Authentification
+### Système d'Authentification
+
 - **Login sécurisé** : Page de connexion avec validation des identifiants
 - **Gestion des sessions** : Sessions PHP sécurisées avec vérification automatique
-- **Rôles utilisateurs** : 
+- **Rôles utilisateurs** :
   - 👤 **Utilisateur** : Accès à sa caisse personnelle et son historique
   - 👨‍💼 **Administrateur** : Vue d'ensemble de tous les utilisateurs et leurs activités
 - **Middleware** : Protection automatique des pages selon les droits d'accès
 - **Déconnexion** : Bouton de déconnexion sur toutes les pages
 
-### 💵 Calcul de Monnaie
+### Calcul de Monnaie
+
 - **Algorithme glouton (standard)** : Optimise le nombre de billets/pièces à rendre (du plus grand au plus petit)
 - **Algorithme inversé** : Rendu de monnaie du plus petit au plus grand
 - **Valeur préférée** : Option pour privilégier une dénomination spécifique (ex: maximiser les pièces de 1€)
 - **Validation** : Vérifie la disponibilité en caisse
 - **Précision** : Calculs en centimes pour éviter les erreurs de flottants
 
-### 🎨 Interface Utilisateur
+### Interface Utilisateur
+
 - **Design moderne** : Interface responsive avec dégradés et animations
 - **Images réelles** : Billets et pièces d'euros officiels de la BCE
 - **Badges visuels** : Mise en évidence de la monnaie à rendre
@@ -123,21 +199,23 @@ Réponse HTTP
   - 🔴 Rouge : Sorties d'argent
 - **Responsive** : Compatible desktop, tablette et mobile
 
-### 📊 Gestion de Caisse (Utilisateur)
+### Gestion de Caisse (Utilisateur)
+
 - **Caisse personnelle** : Chaque utilisateur gère sa propre caisse
 - **État initial** : Affichage de la caisse avant transaction
 - **Nouvel état** : Affichage après transaction avec différences
 - **Comparaison** : Vue avant/après côte à côte
 - **Persistance** : Sauvegarde automatique de l'état de la caisse en base de données
-- **Historique personnel** : 
+- **Historique personnel** :
   - Aperçu des 5 dernières transactions sur la page principale
   - Page dédiée avec l'historique complet de l'utilisateur
   - Détails visuels avec images des billets/pièces rendus
   - Statistiques (nombre de transactions, total rendu)
 
-### 👨‍💼 Dashboard Administrateur
+### Dashboard Administrateur
+
 - **Vue d'ensemble** : Liste de tous les utilisateurs (hors admins) avec leurs statistiques
-- **Statistiques globales** : 
+- **Statistiques globales** :
   - Nombre total d'utilisateurs
   - Nombre total de transactions
   - Total des montants rendus
@@ -148,21 +226,24 @@ Réponse HTTP
 - **Historique global** : Vue de toutes les transactions de tous les utilisateurs
 - **Détail utilisateur** : Historique complet et statistiques d'un utilisateur spécifique
 
-## 🚀 Installation et Utilisation
+## Installation et Utilisation
 
 ### Prérequis
+
 - Docker
 - Docker Compose
 
 ### Configuration
 
 1. **Cloner le projet** :
+
 ```bash
 git clone https://github.com/livecampus-ESDID-26-2/Developpement-securise-PHP
 cd Developpement-securise-PHP
 ```
 
 2. **Configurer les variables d'environnement** :
+
 ```bash
 # Copier le fichier d'exemple
 cp .env.exemple .env
@@ -175,6 +256,7 @@ nano .env  # ou vim, code, etc.
 ```
 
 **Mots de passe à modifier en production** :
+
 - `DB_PASSWORD` : Mot de passe de l'utilisateur MySQL standard
 - `DB_ADMIN_PASSWORD` : Mot de passe de l'utilisateur MySQL admin
 - `DB_ROOT_PASSWORD` : Mot de passe root MySQL (pour l'initialisation)
@@ -199,16 +281,17 @@ DB_ADMIN_PASSWORD=admin_password_secure_2024  # À modifier en production !
 DB_ROOT_PASSWORD=rootpassword           # Utilisé uniquement au démarrage de Docker
 ```
 
-### 🔐 Principe de séparation des privilèges
+### Principe de séparation des privilèges
 
 L'application utilise **deux utilisateurs MySQL distincts** pour respecter le **principe du moindre privilège** :
 
-| Utilisateur | Droits | Usage | Sécurité |
-|-------------|--------|-------|----------|
-| **cash_user** | SELECT, INSERT, UPDATE | Opérations quotidiennes de l'application | ✅ Ne peut pas supprimer de données |
-| **cash_admin** | ALL PRIVILEGES | Opérations d'administration sensibles | ⚠️ À utiliser uniquement si nécessaire |
+| Utilisateur    | Droits                 | Usage                                    | Sécurité                               |
+| -------------- | ---------------------- | ---------------------------------------- | -------------------------------------- |
+| **cash_user**  | SELECT, INSERT, UPDATE | Opérations quotidiennes de l'application | ✅ Ne peut pas supprimer de données    |
+| **cash_admin** | ALL PRIVILEGES         | Opérations d'administration sensibles    | ⚠️ À utiliser uniquement si nécessaire |
 
 Cette séparation des droits **limite les dégâts** en cas de compromission de l'application :
+
 - L'utilisateur standard ne peut pas supprimer de données (pas de DELETE)
 - L'utilisateur standard ne peut pas modifier la structure de la base (pas de DROP, ALTER)
 - L'utilisateur admin n'est utilisé que pour des opérations explicitement sensibles
@@ -218,12 +301,14 @@ Cette séparation des droits **limite les dégâts** en cas de compromission de 
 ### Démarrage
 
 3. **Lancer Docker Compose** :
+
 ```bash
 docker compose up
 ```
 
 4. **Attendre l'initialisation** :
    La première fois, Docker va :
+
    - Construire l'image PHP avec les extensions PDO MySQL
    - Télécharger l'image MySQL
    - Initialiser la base de données avec le script `database/init.sql`
@@ -231,10 +316,11 @@ docker compose up
 
 5. **Accéder à l'application** :
    Ouvrir le navigateur à l'adresse : http://localhost:8000
-   
+
    Vous serez redirigé vers la page de connexion.
 
 6. **Arrêter le serveur** :
+
 ```bash
 # Ctrl+C dans le terminal, puis :
 docker compose down
@@ -253,18 +339,21 @@ docker compose up
 ```
 
 Après cette opération :
+
 - ✅ Les utilisateurs MySQL (`cash_user` et `cash_admin`) seront créés avec les bons droits
 - ✅ Les mots de passe des comptes applicatifs seront correctement hashés
 - ✅ Les mots de passe MySQL proviendront du fichier `.env` (non commité)
 
-## 🔧 Technologies Utilisées
+## Technologies Utilisées
 
 ### Backend
+
 - **PHP 8.4** : POO avancée avec namespaces PSR-4
 - **MySQL 8.0** : Base de données relationnelle
 - **PDO** : Couche d'abstraction avec requêtes préparées
 
 ### Architecture
+
 - **MVC** : Pattern Model-View-Controller
 - **PSR-4** : Autoloading automatique des classes
 - **Singleton** : Pattern pour la connexion BDD
@@ -272,16 +361,19 @@ Après cette opération :
 - **Routing** : URLs propres et RESTful
 
 ### Frontend
+
 - **HTML5/CSS3** : Interface responsive
 - **Design moderne** : Dégradés, animations, responsive
 
 ### Infrastructure
+
 - **Docker** : Conteneurisation complète
 - **Apache** : Serveur web avec mod_rewrite
 
-## 🔒 Sécurité
+## Sécurité
 
 ### Sécurité de l'application
+
 ✅ **Authentification** : Système de login avec sessions PHP sécurisées  
 ✅ **Gestion des rôles** : Middleware pour protéger les pages selon les droits d'accès  
 ✅ **Hashage des mots de passe** : Utilisation de `password_hash()` et `password_verify()`  
@@ -295,6 +387,7 @@ Après cette opération :
 ✅ **Sessions sécurisées** : Démarrage automatique et destruction propre
 
 ### Sécurité de la base de données
+
 ✅ **Séparation des privilèges** : Deux utilisateurs MySQL avec droits adaptés  
 ✅ **Principe du moindre privilège** : Utilisateur standard limité (SELECT, INSERT, UPDATE)  
 ✅ **Protection contre les suppressions** : L'utilisateur standard ne peut pas DELETE  
@@ -305,6 +398,7 @@ Après cette opération :
 ### Sécurité des mots de passe applicatifs
 
 Les mots de passe des utilisateurs de l'application sont **hashés de manière sécurisée** avec bcrypt :
+
 - ✅ Tous les mots de passe sont hashés avec `PASSWORD_DEFAULT` (bcrypt)
 - ✅ Vérification sécurisée avec `password_verify()`
 - ✅ Les comptes de démonstration utilisent également des mots de passe hashés
@@ -313,6 +407,7 @@ Les mots de passe des utilisateurs de l'application sont **hashés de manière s
 ### Sécurité des identifiants MySQL
 
 Les identifiants de connexion MySQL sont gérés de manière sécurisée :
+
 - ✅ Mots de passe stockés uniquement dans `.env` (ignoré par Git)
 - ✅ Injection via variables d'environnement (pas de mots de passe en dur dans le code)
 - ✅ Script d'initialisation `init.sh` qui remplace les variables à la volée
@@ -320,7 +415,7 @@ Les identifiants de connexion MySQL sont gérés de manière sécurisée :
 
 **Documentation complète** : Voir `database/SECURITY.md` pour plus de détails sur la sécurité de la base de données.
 
-## 📝 Configuration
+## Configuration
 
 ### Autoloading PSR-4
 
@@ -345,11 +440,13 @@ App\Controllers\*   → app/Controllers/
 ### Base de Données
 
 **Initialisation sécurisée de la base** :
+
 - Le script `database/init.sh` injecte les mots de passe depuis les variables d'environnement
 - Les mots de passe ne sont **jamais stockés en dur** dans les fichiers SQL
 - ✅ Le fichier `init.sql` peut être commité sans risque de sécurité
 
 **Tables créées automatiquement** :
+
 - `users` : Utilisateurs du système avec rôles (user/admin)
   - Colonnes : id, email, password, role, created_at
 - `cash_register_state` : État de la caisse à chaque transaction
@@ -368,16 +465,18 @@ App\Controllers\*   → app/Controllers/
 | `admin@cash.com` | `123456` | 👨‍💼 Admin | Dashboard + Vue d'ensemble |
 
 **État initial de la caisse** :
+
 - 1×500€, 2×200€, 2×100€, 4×50€, 1×20€, 23×10€, 0×5€
 - 34×2€, 23×1€, 23×0.50€, 80×0.20€, 12×0.10€, 8×0.05€, 45×0.02€, 12×0.01€
 
-## 🎓 Projet Pédagogique
+## Projet Pédagogique
 
 Ce projet fait partie du module "**Développement Sécurisé PHP**" à **LiveCampus - ESDID-26.2** et démontre :
 
 ### Compétences techniques
 
 #### Architecture & Patterns
+
 - ✅ **MVC** : Séparation Model-View-Controller
 - ✅ **POO avancée** : Classes abstraites, héritage, namespaces PSR-4
 - ✅ **Design Patterns** : Singleton, Front Controller, MVC
@@ -385,6 +484,7 @@ Ce projet fait partie du module "**Développement Sécurisé PHP**" à **LiveCam
 - ✅ **Autoloading** : PSR-4 avec chargement automatique
 
 #### Développement PHP
+
 - ✅ **PHP 8.4** : Typage strict, nouvelles fonctionnalités
 - ✅ **Sécurité** : Protection XSS, SQL injection, CSRF
 - ✅ **Base de données** : MySQL avec PDO et requêtes préparées
@@ -392,14 +492,17 @@ Ce projet fait partie du module "**Développement Sécurisé PHP**" à **LiveCam
 - ✅ **Routing** : URLs propres et RESTful
 
 #### Algorithmique
+
 - ✅ **Algorithmes de rendu** : Glouton, inversé, avec préférence
 - ✅ **Optimisation** : Calcul optimal de la monnaie
 
 #### DevOps
+
 - ✅ **Docker** : Conteneurisation multi-services
 - ✅ **Git** : Versioning et branches
 
 ### Fonctionnalités avancées
+
 - 🔐 Système d'authentification multi-utilisateurs
 - 👥 Gestion des rôles (utilisateur/administrateur)
 - 📊 Historique avec filtrage par utilisateur
@@ -408,6 +511,7 @@ Ce projet fait partie du module "**Développement Sécurisé PHP**" à **LiveCam
 - 📈 Dashboard administrateur avec statistiques
 
 ### Bonnes pratiques
+
 - **Code structuré** : Architecture MVC claire et maintenable
 - **POO** : Programmation orientée objet avec namespaces
 - **PSR-4** : Autoloading standardisé des classes

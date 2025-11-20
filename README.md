@@ -1,7 +1,39 @@
 # Système de Caisse Enregistreuse - Développement Sécurisé PHP
 
 **École :** LiveCampus - ESDID-26.2  
-**Étudiant :** MASIA Antoine
+**Étudiant :** [Antoine MASIA](https://github.com/MasiaAntoine) - Full-Stack Developer  
+**Intervenant :** [Alexandre Herbeth](https://github.com/Aherbeth) - Fullstack Developer & Trainer
+
+---
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="50%">
+        <a href="https://github.com/MasiaAntoine">
+          <img src="https://avatars.githubusercontent.com/u/115811899?v=4" alt="Antoine MASIA" width="100">
+        </a>
+        <br>
+        <strong>Antoine MASIA</strong>
+        <br>
+        <em>Étudiant</em>
+      </td>
+      <td align="center" width="50%">
+        <a href="https://github.com/Aherbeth">
+          <img src="https://avatars.githubusercontent.com/u/17410092" alt="Alexandre Herbeth" width="100">
+        </a>
+        <br>
+        <strong>Alexandre Herbeth</strong>
+        <br>
+        <em>Intervenant</em>
+      </td>
+    </tr>
+  </table>
+  <br>
+  <em>Projet réalisé dans le cadre du module "Développement Sécurisé PHP"</em>
+</div>
+
+---
 
 ## Description du Projet
 

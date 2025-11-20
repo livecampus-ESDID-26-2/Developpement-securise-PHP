@@ -8,9 +8,9 @@
 
 <div align="center">
 
-<table style="border: none; border-collapse: collapse;">
-  <tr style="border: none;">
-    <td align="center" width="50%" style="border: none;">
+<table>
+  <tr">
+    <td align="center" width="50%"">
       <a href="https://github.com/MasiaAntoine">
         <img src="https://avatars.githubusercontent.com/u/115811899?v=4" alt="Antoine MASIA" width="100">
         <br/>
@@ -19,7 +19,7 @@
         <em>Étudiant</em>
       </a>
     </td>
-    <td align="center" width="50%" style="border: none;">
+    <td align="center" width="50%"">
       <a href="https://github.com/Aherbeth">
         <img src="https://avatars.githubusercontent.com/u/17410092" alt="Alexandre Herbeth" width="100">
         <br/>

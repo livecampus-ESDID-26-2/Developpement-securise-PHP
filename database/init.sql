@@ -3,6 +3,12 @@ CREATE DATABASE IF NOT EXISTS cash;
 
 USE cash;
 
+-- =====================================================
+-- CRÉATION DES UTILISATEURS MYSQL AVEC DROITS ADAPTÉS
+-- =====================================================
+-- Note: Les utilisateurs sont créés par le script init.sh
+-- qui utilise les variables d'environnement du fichier .env
+
 -- Suppression des tables si elles existent
 DROP TABLE IF EXISTS transaction_history;
 DROP TABLE IF EXISTS cash_register_state;

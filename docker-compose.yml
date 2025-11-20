@@ -21,12 +21,15 @@ services:
     env_file:
       - .env
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_ADMIN_PASSWORD: ${DB_ADMIN_PASSWORD}
     ports:
       - "3307:3306"
     volumes:
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/init.sh:/docker-entrypoint-initdb.d/init.sh
       - db_data:/var/lib/mysql
 
 volumes:

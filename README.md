@@ -16,6 +16,14 @@ Application PHP de gestion de caisse enregistreuse avec authentification multi-u
 
 ## 🏗️ Architecture du Projet
 
+### 🛡️ Architecture de Sécurité
+
+Le projet implémente une **architecture de sécurité en profondeur** avec plusieurs couches de protection.
+
+**Principe clé** : Séparation des privilèges au niveau de la base de données
+- 👤 `cash_user` : Droits limités (SELECT, INSERT, UPDATE) → Utilisé par défaut
+- 👨‍💼 `cash_admin` : Tous les droits → Utilisé uniquement pour les opérations sensibles
+
 ### Architecture MVC (Model-View-Controller)
 
 Le projet suit une architecture MVC orientée objet moderne avec autoloading PSR-4 :
@@ -157,20 +165,53 @@ cd Developpement-securise-PHP
 2. **Configurer les variables d'environnement** :
 ```bash
 # Copier le fichier d'exemple
-cp env.exemple .env
+cp .env.exemple .env
 
-# Éditer le fichier .env si nécessaire
-# Par défaut, les valeurs sont déjà configurées pour Docker
+# ⚠️ IMPORTANT : Éditer le fichier .env et modifier les mots de passe !
+# En développement, vous pouvez garder les valeurs par défaut
+# En production, TOUS les mots de passe doivent être modifiés
+
+nano .env  # ou vim, code, etc.
 ```
 
-Le fichier `.env` contient les paramètres de connexion à la base de données :
+**Mots de passe à modifier en production** :
+- `DB_PASSWORD` : Mot de passe de l'utilisateur MySQL standard
+- `DB_ADMIN_PASSWORD` : Mot de passe de l'utilisateur MySQL admin
+- `DB_ROOT_PASSWORD` : Mot de passe root MySQL (pour l'initialisation)
+
+Le fichier `.env` contient les paramètres de connexion à la base de données avec **deux utilisateurs MySQL distincts** pour une sécurité renforcée :
+
 ```env
-DB_HOST=db              # Nom du service Docker (ne pas modifier)
-DB_PORT=3306            # Port MySQL
-DB_NAME=cash            # Nom de la base de données
-DB_USER=root            # Utilisateur MySQL
-DB_PASSWORD=rootpassword # Mot de passe MySQL (à modifier en production !)
+# Configuration de base
+DB_HOST=db                              # Nom du service Docker (ne pas modifier)
+DB_PORT=3306                            # Port MySQL
+DB_NAME=cash                            # Nom de la base de données
+
+# Utilisateur STANDARD (droits limités : SELECT, INSERT, UPDATE)
+DB_USER=cash_user                       # Utilisé pour les opérations courantes
+DB_PASSWORD=user_password_secure_2024   # À modifier en production !
+
+# Utilisateur ADMIN (tous les droits : incluant DELETE, DROP, ALTER)
+DB_ADMIN_USER=cash_admin                # Utilisé pour les opérations d'administration
+DB_ADMIN_PASSWORD=admin_password_secure_2024  # À modifier en production !
+
+# Utilisateur ROOT (initialisation uniquement)
+DB_ROOT_PASSWORD=rootpassword           # Utilisé uniquement au démarrage de Docker
 ```
+
+### 🔐 Principe de séparation des privilèges
+
+L'application utilise **deux utilisateurs MySQL distincts** pour respecter le **principe du moindre privilège** :
+
+| Utilisateur | Droits | Usage | Sécurité |
+|-------------|--------|-------|----------|
+| **cash_user** | SELECT, INSERT, UPDATE | Opérations quotidiennes de l'application | ✅ Ne peut pas supprimer de données |
+| **cash_admin** | ALL PRIVILEGES | Opérations d'administration sensibles | ⚠️ À utiliser uniquement si nécessaire |
+
+Cette séparation des droits **limite les dégâts** en cas de compromission de l'application :
+- L'utilisateur standard ne peut pas supprimer de données (pas de DELETE)
+- L'utilisateur standard ne peut pas modifier la structure de la base (pas de DROP, ALTER)
+- L'utilisateur admin n'est utilisé que pour des opérations explicitement sensibles
 
 ⚠️ **Important** : Le fichier `.env` est ignoré par Git pour des raisons de sécurité. Ne jamais commit ce fichier avec des identifiants réels.
 
@@ -201,17 +242,20 @@ docker compose down
 
 ### Réinitialisation de la base de données
 
-Si vous avez déjà lancé l'application avant la mise en place du hashage des mots de passe, vous devez réinitialiser la base de données :
+Si vous avez déjà lancé l'application avant la mise en place de la sécurité renforcée, vous devez réinitialiser la base de données :
 
 ```bash
 # Arrêter les conteneurs et supprimer les volumes
 docker compose down -v
 
-# Relancer l'application (la base sera recréée avec les mots de passe hashés)
+# Relancer l'application (la base sera recréée avec les utilisateurs MySQL sécurisés)
 docker compose up
 ```
 
-Après cette opération, tous les mots de passe seront correctement hashés en base de données.
+Après cette opération :
+- ✅ Les utilisateurs MySQL (`cash_user` et `cash_admin`) seront créés avec les bons droits
+- ✅ Les mots de passe des comptes applicatifs seront correctement hashés
+- ✅ Les mots de passe MySQL proviendront du fichier `.env` (non commité)
 
 ## 🔧 Technologies Utilisées
 
@@ -237,6 +281,7 @@ Après cette opération, tous les mots de passe seront correctement hashés en b
 
 ## 🔒 Sécurité
 
+### Sécurité de l'application
 ✅ **Authentification** : Système de login avec sessions PHP sécurisées  
 ✅ **Gestion des rôles** : Middleware pour protéger les pages selon les droits d'accès  
 ✅ **Hashage des mots de passe** : Utilisation de `password_hash()` et `password_verify()`  
@@ -249,13 +294,31 @@ Après cette opération, tous les mots de passe seront correctement hashés en b
 ✅ **Gestion des erreurs** : Logging côté serveur (error_log)  
 ✅ **Sessions sécurisées** : Démarrage automatique et destruction propre
 
-### Sécurité des mots de passe
+### Sécurité de la base de données
+✅ **Séparation des privilèges** : Deux utilisateurs MySQL avec droits adaptés  
+✅ **Principe du moindre privilège** : Utilisateur standard limité (SELECT, INSERT, UPDATE)  
+✅ **Protection contre les suppressions** : L'utilisateur standard ne peut pas DELETE  
+✅ **Protection structurelle** : L'utilisateur standard ne peut pas DROP/ALTER  
+✅ **Connexions multiples** : `getInstance()` (user) et `getAdminInstance()` (admin)  
+✅ **Isolation des rôles** : Réduction de la surface d'attaque en cas de compromission
 
-Les mots de passe sont maintenant **hashés de manière sécurisée** avec l'algorithme bcrypt via `password_hash()` :
+### Sécurité des mots de passe applicatifs
+
+Les mots de passe des utilisateurs de l'application sont **hashés de manière sécurisée** avec bcrypt :
 - ✅ Tous les mots de passe sont hashés avec `PASSWORD_DEFAULT` (bcrypt)
 - ✅ Vérification sécurisée avec `password_verify()`
 - ✅ Les comptes de démonstration utilisent également des mots de passe hashés
 - ✅ Les mots de passe ne sont jamais stockés en clair dans la base de données
+
+### Sécurité des identifiants MySQL
+
+Les identifiants de connexion MySQL sont gérés de manière sécurisée :
+- ✅ Mots de passe stockés uniquement dans `.env` (ignoré par Git)
+- ✅ Injection via variables d'environnement (pas de mots de passe en dur dans le code)
+- ✅ Script d'initialisation `init.sh` qui remplace les variables à la volée
+- ✅ Fichiers SQL commitables sans risque de fuite d'identifiants
+
+**Documentation complète** : Voir `database/SECURITY.md` pour plus de détails sur la sécurité de la base de données.
 
 ## 📝 Configuration
 
@@ -280,6 +343,11 @@ App\Controllers\*   → app/Controllers/
 ```
 
 ### Base de Données
+
+**Initialisation sécurisée de la base** :
+- Le script `database/init.sh` injecte les mots de passe depuis les variables d'environnement
+- Les mots de passe ne sont **jamais stockés en dur** dans les fichiers SQL
+- ✅ Le fichier `init.sql` peut être commité sans risque de sécurité
 
 **Tables créées automatiquement** :
 - `users` : Utilisateurs du système avec rôles (user/admin)

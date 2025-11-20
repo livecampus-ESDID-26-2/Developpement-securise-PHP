@@ -1,0 +1,25 @@
+# Activer le module de réécriture
+RewriteEngine On
+
+# Définir le chemin de base
+RewriteBase /
+
+# Rediriger toutes les requêtes vers index.php (sauf les fichiers existants)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Empêcher l'accès direct aux fichiers sensibles
+<FilesMatch "^(bootstrap|routes)\.php$">
+    Require all denied
+</FilesMatch>
+
+# Empêcher l'accès aux dossiers config et backend (legacy)
+RedirectMatch 403 ^/config/
+RedirectMatch 403 ^/backend/
+
+# Autoriser l'accès aux fichiers CSS et images
+<FilesMatch "\.(css|jpg|jpeg|png|gif|ico|svg|js)$">
+    Require all granted
+</FilesMatch>
+

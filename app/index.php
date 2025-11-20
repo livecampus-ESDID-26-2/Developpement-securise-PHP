@@ -1,24 +1,18 @@
 <?php
 /**
- * Point d'entrée de l'application
- * Redirige vers le système de caisse
+ * Front Controller - Point d'entrée de l'application MVC
  */
 
-// Chargement de la configuration (définit ROOT_PATH, BACKEND_PATH, VIEWS_PATH, CONFIG_PATH)
-require_once __DIR__ . '/config/config.php';
+// Chargement du bootstrap
+require_once __DIR__ . '/bootstrap.php';
 
-// Vérification de la connexion
-if (!isLoggedIn()) {
-    // Afficher la page de login
-    require_once VIEWS_PATH . '/login.php';
-    exit;
-}
+use App\Core\Router;
 
-// Si admin, rediriger vers le dashboard admin
-if (isAdmin()) {
-    header('Location: backend/admin_dashboard.php');
-    exit;
-}
+// Création du routeur
+$router = new Router();
 
-// Inclusion du système de caisse
-require_once BACKEND_PATH . '/systeme_caisse.php';
+// Chargement des routes
+require_once ROOT_PATH . '/routes.php';
+
+// Dispatch de la requête
+$router->dispatch();

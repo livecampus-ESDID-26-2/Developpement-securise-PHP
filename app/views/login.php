@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - Système de Caisse</title>
-    <link rel="stylesheet" href="views/style.css">
+    <link rel="stylesheet" href="/views/style.css">
 </head>
 <body class="login-page">
     <div class="login-container">
@@ -20,7 +20,7 @@
             </div>
             <?php endif; ?>
 
-            <form method="POST" action="backend/auth_login.php" class="login-form">
+            <form method="POST" action="/login" class="login-form">
                 <div class="form-group">
                     <label for="email">📧 Email</label>
                     <input 

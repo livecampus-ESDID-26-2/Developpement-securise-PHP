@@ -16,35 +16,75 @@ Application PHP de gestion de caisse enregistreuse avec authentification multi-u
 
 ## 🏗️ Architecture du Projet
 
+### Architecture MVC (Model-View-Controller)
+
+Le projet suit une architecture MVC orientée objet moderne avec autoloading PSR-4 :
+
 ```
 app/
-├── index.php                          # Point d'entrée principal avec vérification auth
+├── index.php                          # Front Controller - Point d'entrée unique
+├── bootstrap.php                      # Initialisation de l'application
+├── routes.php                         # Définition des routes
 │
-├── config/                            # Configuration
-│   ├── config.php                     # Chemins, constantes et démarrage session
-│   ├── auth.php                       # Fonctions d'authentification et middleware
-│   ├── database.php                   # Connexion et fonctions base de données
-│   └── monnaie.php                    # Configuration billets/pièces avec images
+├── Core/                              # Classes de base du framework
+│   ├── Autoloader.php                 # Autoloader PSR-4
+│   ├── Database.php                   # Singleton de connexion PDO
+│   ├── Router.php                     # Système de routage
+│   ├── Controller.php                 # Contrôleur de base
+│   ├── Model.php                      # Modèle de base
+│   └── Session.php                    # Gestion des sessions
 │
-├── backend/                           # Logique métier (PHP)
-│   ├── auth_login.php                 # Traitement de la connexion
-│   ├── auth_logout.php                # Déconnexion
-│   ├── systeme_caisse.php             # Page principale de la caisse (user)
-│   ├── traitement_caisse.php          # Calculs et traitement des transactions
-│   ├── historique.php                 # Historique des transactions de l'utilisateur
-│   ├── admin_dashboard.php            # Dashboard administrateur
-│   ├── admin_historique.php           # Historique global (admin)
-│   └── admin_user_detail.php          # Détail d'un utilisateur (admin)
+├── Models/                            # Modèles (Logique métier et accès données)
+│   ├── User.php                       # Modèle utilisateur (authentification)
+│   ├── CashRegister.php               # Modèle caisse (état, calculs)
+│   ├── Transaction.php                # Modèle transaction (historique)
+│   └── Currency.php                   # Configuration des billets/pièces
 │
-└── views/                             # Interface utilisateur (HTML/CSS)
+├── Controllers/                       # Contrôleurs (Logique applicative)
+│   ├── AuthController.php             # Authentification (login/logout)
+│   ├── CashRegisterController.php     # Gestion de la caisse (transactions)
+│   └── AdminController.php            # Administration (dashboard, stats)
+│
+└── views/                             # Vues (Interface utilisateur)
     ├── login.php                      # Page de connexion
-    ├── formulaire_caisse.php          # Formulaire de saisie caisse
-    ├── resultat_caisse.php            # Affichage des résultats
-    └── style.css                       # Styles CSS (1150+ lignes)
+    ├── cash_register_form.php         # Formulaire de saisie caisse
+    ├── cash_register_result.php       # Affichage des résultats
+    ├── history.php                    # Historique utilisateur
+    ├── admin/                         # Vues administrateur
+    │   ├── dashboard.php              # Dashboard admin
+    │   ├── history.php                # Historique global
+    │   └── user_detail.php            # Détail utilisateur
+    └── style.css                      # Styles CSS (1150+ lignes)
 
 database/
 └── init.sql                           # Script d'initialisation de la BDD
 ```
+
+### Flux de l'application MVC
+
+```
+Requête HTTP
+     ↓
+index.php (Front Controller)
+     ↓
+bootstrap.php (Initialisation + Autoloader PSR-4)
+     ↓
+Router (Analyse URL → Trouve la route)
+     ↓
+Controller (Logique applicative)
+     ↓
+Model (Accès aux données BDD)
+     ↓
+View (Affichage HTML)
+     ↓
+Réponse HTTP
+```
+
+**Caractéristiques :**
+- ✅ Point d'entrée unique (`index.php`)
+- ✅ Autoloading PSR-4 automatique
+- ✅ URLs propres sans `.php`
+- ✅ Séparation stricte des responsabilités
 
 ## ✨ Fonctionnalités
 
@@ -161,11 +201,25 @@ docker compose down
 
 ## 🔧 Technologies Utilisées
 
-- **PHP 8.4** : Backend avec extensions PDO MySQL
-- **MySQL 8.0** : Base de données
-- **HTML5/CSS3** : Frontend
-- **Docker** : Conteneurisation
-- **Architecture MVC** : Séparation des responsabilités
+### Backend
+- **PHP 8.4** : POO avancée avec namespaces PSR-4
+- **MySQL 8.0** : Base de données relationnelle
+- **PDO** : Couche d'abstraction avec requêtes préparées
+
+### Architecture
+- **MVC** : Pattern Model-View-Controller
+- **PSR-4** : Autoloading automatique des classes
+- **Singleton** : Pattern pour la connexion BDD
+- **Front Controller** : Point d'entrée unique
+- **Routing** : URLs propres et RESTful
+
+### Frontend
+- **HTML5/CSS3** : Interface responsive
+- **Design moderne** : Dégradés, animations, responsive
+
+### Infrastructure
+- **Docker** : Conteneurisation complète
+- **Apache** : Serveur web avec mod_rewrite
 
 ## 🔒 Sécurité
 
@@ -185,23 +239,37 @@ En production, utiliser `password_hash()` et `password_verify()`.
 
 ## 📝 Configuration
 
-### Constantes (config/config.php)
-- `ROOT_PATH` : Chemin vers le dossier `app/`
-- `BACKEND_PATH` : Chemin vers `backend/`
-- `VIEWS_PATH` : Chemin vers `views/`
-- `CONFIG_PATH` : Chemin vers `config/`
+### Autoloading PSR-4
+
+L'application utilise un autoloader conforme PSR-4. Plus besoin de `require_once` !
+
+```php
+// Les classes se chargent automatiquement
+use App\Models\User;
+use App\Controllers\CashRegisterController;
+
+$user = new User(); // Chargé depuis app/Models/User.php
+```
+
+### Namespaces
+
+```php
+App\Core\*          → app/Core/
+App\Models\*        → app/Models/
+App\Controllers\*   → app/Controllers/
+```
 
 ### Base de Données
 
 **Tables créées automatiquement** :
 - `users` : Utilisateurs du système avec rôles (user/admin)
   - Colonnes : id, email, password, role, created_at
-- `caisse_state` : État de la caisse à chaque transaction
+- `cash_register_state` : État de la caisse à chaque transaction
   - Contient tous les billets et pièces (15 colonnes)
   - Le dernier enregistrement = état actuel de la caisse
-- `caisse_history` : Historique complet des transactions
+- `transaction_history` : Historique complet des transactions
   - Stocke : montants, algorithme, valeur préférée, user_id
-  - JSON : monnaie_rendue, caisse_avant, caisse_apres
+  - JSON : change_returned, register_before, register_after
   - Permet le filtrage par utilisateur
 
 **Utilisateurs de démonstration** :
@@ -238,12 +306,28 @@ Interface moderne avec comptes de démonstration affichés
 Ce projet fait partie du module "**Développement Sécurisé PHP**" à **LiveCampus - ESDID-26.2** et démontre :
 
 ### Compétences techniques
-- ✅ **Architecture MVC** : Séparation stricte des responsabilités
-- ✅ **Sécurité PHP** : Protection contre les vulnérabilités courantes
+
+#### Architecture & Patterns
+- ✅ **MVC** : Séparation Model-View-Controller
+- ✅ **POO avancée** : Classes abstraites, héritage, namespaces PSR-4
+- ✅ **Design Patterns** : Singleton, Front Controller, MVC
+- ✅ **SOLID** : Principes de conception orientée objet
+- ✅ **Autoloading** : PSR-4 avec chargement automatique
+
+#### Développement PHP
+- ✅ **PHP 8.4** : Typage strict, nouvelles fonctionnalités
+- ✅ **Sécurité** : Protection XSS, SQL injection, CSRF
 - ✅ **Base de données** : MySQL avec PDO et requêtes préparées
-- ✅ **Gestion de sessions** : Authentification et autorisation
-- ✅ **Algorithmes** : Implémentation de plusieurs stratégies de calcul
-- ✅ **Docker** : Conteneurisation complète de l'application
+- ✅ **Sessions** : Gestion sécurisée de l'authentification
+- ✅ **Routing** : URLs propres et RESTful
+
+#### Algorithmique
+- ✅ **Algorithmes de rendu** : Glouton, inversé, avec préférence
+- ✅ **Optimisation** : Calcul optimal de la monnaie
+
+#### DevOps
+- ✅ **Docker** : Conteneurisation multi-services
+- ✅ **Git** : Versioning et branches
 
 ### Fonctionnalités avancées
 - 🔐 Système d'authentification multi-utilisateurs
@@ -254,8 +338,12 @@ Ce projet fait partie du module "**Développement Sécurisé PHP**" à **LiveCam
 - 📈 Dashboard administrateur avec statistiques
 
 ### Bonnes pratiques
-- Code commenté et structuré
-- Variables d'environnement pour la configuration sensible
-- Gestion des erreurs avec logging
-- Validation des données
-- Design moderne et UX soignée
+- **Code structuré** : Architecture MVC claire et maintenable
+- **POO** : Programmation orientée objet avec namespaces
+- **PSR-4** : Autoloading standardisé des classes
+- **Separation of Concerns** : Séparation logique/présentation/données
+- **DRY** : Don't Repeat Yourself - Réutilisation du code
+- **Variables d'environnement** : Configuration sensible externalisée
+- **Gestion des erreurs** : Logging et gestion des exceptions
+- **Validation des données** : Typage et validation stricte
+- **Design moderne** : Interface responsive et UX soignée

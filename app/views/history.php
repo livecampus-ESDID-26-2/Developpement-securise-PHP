@@ -1,25 +1,7 @@
 <?php
 /**
- * Page d'historique complet des transactions
+ * Vue: Historique des transactions (utilisateur)
  */
-
-// Chargement de la configuration globale
-if (!defined('ROOT_PATH')) {
-    require_once __DIR__ . '/../config/config.php';
-}
-
-// Vérification de la connexion
-requireLogin();
-
-// Récupération de l'utilisateur connecté
-$user = getCurrentUser();
-
-// Chargement de la configuration des monnaies
-require_once CONFIG_PATH . '/monnaie.php';
-
-// Récupération de toutes les transactions de l'utilisateur
-$toutes_transactions = getTransactionHistory(0, 0, $user['id']);
-$total_transactions = countTransactions($user['id']);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -27,13 +9,13 @@ $total_transactions = countTransactions($user['id']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historique des Transactions</title>
-    <link rel="stylesheet" href="../views/style.css">
+    <link rel="stylesheet" href="/views/style.css">
 </head>
 <body>
     <div class="container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h1>📜 Historique des Transactions</h1>
-            <a href="../index.php" class="btn-retour">← Retour à la caisse</a>
+            <a href="/cash-register" class="btn-retour">← Retour à la caisse</a>
         </div>
 
         <div class="stats-bar">
@@ -41,19 +23,19 @@ $total_transactions = countTransactions($user['id']);
                 <span class="stat-label">Total transactions</span>
                 <span class="stat-value"><?php echo $total_transactions; ?></span>
             </div>
-            <?php if ($toutes_transactions && count($toutes_transactions) > 0): 
-                $total_rendu = array_sum(array_column($toutes_transactions, 'montant_rendu'));
+            <?php if ($transactions && count($transactions) > 0): 
+                $total_returned = array_sum(array_column($transactions, 'amount_returned'));
             ?>
             <div class="stat-item">
                 <span class="stat-label">Total rendu</span>
-                <span class="stat-value"><?php echo number_format($total_rendu, 2, ',', ' '); ?>€</span>
+                <span class="stat-value"><?php echo number_format($total_returned, 2, ',', ' '); ?>€</span>
             </div>
             <?php endif; ?>
         </div>
 
-        <?php if ($toutes_transactions && count($toutes_transactions) > 0): ?>
+        <?php if ($transactions && count($transactions) > 0): ?>
         <div class="historique-complet">
-            <?php foreach ($toutes_transactions as $index => $transaction): ?>
+            <?php foreach ($transactions as $transaction): ?>
             <div class="transaction-detail">
                 <div class="transaction-detail-header">
                     <div class="header-left">
@@ -63,12 +45,12 @@ $total_transactions = countTransactions($user['id']);
                         </span>
                     </div>
                     <div class="header-right">
-                        <span class="badge-algo <?php echo $transaction['algorithme']; ?>">
-                            <?php echo $transaction['algorithme'] === 'glouton' ? '⚡ Algorithme Standard' : '🔄 Algorithme Inversé'; ?>
+                        <span class="badge-algo <?php echo $transaction['algorithm']; ?>">
+                            <?php echo $transaction['algorithm'] === 'greedy' ? '⚡ Algorithme Standard' : '🔄 Algorithme Inversé'; ?>
                         </span>
-                        <?php if (!empty($transaction['valeur_preferee'])): ?>
+                        <?php if (!empty($transaction['preferred_value'])): ?>
                         <span class="badge-prefere">
-                            ⭐ Valeur préférée: <?php echo $monnaie_config[$transaction['valeur_preferee']]['label'] ?? $transaction['valeur_preferee']; ?>
+                            ⭐ Valeur préférée: <?php echo $currency_config[$transaction['preferred_value']]['label'] ?? $transaction['preferred_value']; ?>
                         </span>
                         <?php endif; ?>
                     </div>
@@ -78,15 +60,15 @@ $total_transactions = countTransactions($user['id']);
                     <div class="montants-section">
                         <div class="montant-box">
                             <span class="montant-label">Montant dû</span>
-                            <span class="montant-value"><?php echo number_format($transaction['montant_du'], 2, ',', ' '); ?>€</span>
+                            <span class="montant-value"><?php echo number_format($transaction['amount_due'], 2, ',', ' '); ?>€</span>
                         </div>
                         <div class="montant-box">
                             <span class="montant-label">Montant donné</span>
-                            <span class="montant-value"><?php echo number_format($transaction['montant_donne'], 2, ',', ' '); ?>€</span>
+                            <span class="montant-value"><?php echo number_format($transaction['amount_given'], 2, ',', ' '); ?>€</span>
                         </div>
                         <div class="montant-box highlight">
                             <span class="montant-label">Monnaie rendue</span>
-                            <span class="montant-value"><?php echo number_format($transaction['montant_rendu'], 2, ',', ' '); ?>€</span>
+                            <span class="montant-value"><?php echo number_format($transaction['amount_returned'], 2, ',', ' '); ?>€</span>
                         </div>
                     </div>
 
@@ -94,16 +76,16 @@ $total_transactions = countTransactions($user['id']);
                         <h4>💵 Détail de la monnaie rendue</h4>
                         <div class="monnaie-grid">
                             <?php 
-                            $monnaie_rendue = $transaction['monnaie_rendue'];
-                            foreach ($monnaie_config as $cle => $config):
-                                if (isset($monnaie_rendue[$cle]) && $monnaie_rendue[$cle] > 0):
+                            $change_returned = $transaction['change_returned'];
+                            foreach ($currency_config as $key => $config):
+                                if (isset($change_returned[$key]) && $change_returned[$key] > 0):
                             ?>
                             <div class="monnaie-item">
                                 <img src="<?php echo htmlspecialchars($config['img']); ?>" 
                                      alt="<?php echo htmlspecialchars($config['label']); ?>" 
                                      class="monnaie-img-small">
                                 <span class="monnaie-label"><?php echo $config['label']; ?></span>
-                                <span class="monnaie-count">×<?php echo $monnaie_rendue[$cle]; ?></span>
+                                <span class="monnaie-count">×<?php echo $change_returned[$key]; ?></span>
                             </div>
                             <?php 
                                 endif;
@@ -118,7 +100,7 @@ $total_transactions = countTransactions($user['id']);
         <?php else: ?>
         <div class="empty-state">
             <p>📭 Aucune transaction enregistrée pour le moment.</p>
-            <a href="../index.php" class="btn-primary">Effectuer une première transaction</a>
+            <a href="/cash-register" class="btn-primary">Effectuer une première transaction</a>
         </div>
         <?php endif; ?>
     </div>

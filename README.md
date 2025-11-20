@@ -283,24 +283,6 @@ App\Controllers\*   → app/Controllers/
 - 1×500€, 2×200€, 2×100€, 4×50€, 1×20€, 23×10€, 0×5€
 - 34×2€, 23×1€, 23×0.50€, 80×0.20€, 12×0.10€, 8×0.05€, 45×0.02€, 12×0.01€
 
-## 📸 Captures d'écran
-
-### Page de Connexion
-Interface moderne avec comptes de démonstration affichés
-
-### Interface Utilisateur
-- Formulaire de caisse avec état actuel
-- Choix d'algorithme (Standard / Inversé)
-- Valeur préférée optionnelle
-- Aperçu des 5 dernières transactions
-- Bouton d'historique complet
-
-### Dashboard Administrateur
-- Vue d'ensemble de tous les utilisateurs
-- Statistiques globales
-- 3 dernières transactions par utilisateur
-- Accès aux détails complets
-
 ## 🎓 Projet Pédagogique
 
 Ce projet fait partie du module "**Développement Sécurisé PHP**" à **LiveCampus - ESDID-26.2** et démontre :

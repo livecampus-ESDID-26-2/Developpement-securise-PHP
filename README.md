@@ -13,21 +13,23 @@
     <td align="center" width="50%"">
       <a href="https://github.com/MasiaAntoine">
         <img src="https://avatars.githubusercontent.com/u/115811899?v=4" alt="Antoine MASIA" width="100">
-        <br/>
-        <strong>Antoine MASIA</strong>
-        <br/>
-        <em>Étudiant</em>
       </a>
+      <br/>
+      <strong>Antoine MASIA</strong>
+      <br/>
+      <em>Étudiant</em>
     </td>
     <td align="center" width="50%"">
       <a href="https://github.com/Aherbeth">
-        <img src="https://avatars.githubusercontent.com/u/17410092" alt="Alexandre Herbeth" width="100">
-        <br/>
-        <strong>Alexandre Herbeth</strong>
-        <br/>
-        <em>Intervenant</em>
+        <img src="https://avatars.githubusercontent.com/u/17410092" alt="Alexandre Herbeth" 
+        width="100">      
       </a>
+      <br/>
+      <strong>Alexandre Herbeth</strong>
+      <br/>
+      <em>Intervenant</em>
     </td>
+
   </tr>
 </table>
 

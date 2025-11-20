@@ -9,7 +9,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Détail Utilisateur - Admin</title>
-    <link rel="stylesheet" href="/views/style.css">
+    <link rel="stylesheet" href="/Views/style.css">
 </head>
 <body>
     <div class="container">

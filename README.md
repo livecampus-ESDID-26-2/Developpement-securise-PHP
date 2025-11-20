@@ -53,7 +53,7 @@ app/
 │   ├── CashRegisterController.php     # Gestion de la caisse (transactions)
 │   └── AdminController.php            # Administration (dashboard, stats)
 │
-└── views/                             # Vues (Interface utilisateur)
+└── Views/                             # Vues (Interface utilisateur)
     ├── login.php                      # Page de connexion
     ├── cash_register_form.php         # Formulaire de saisie caisse
     ├── cash_register_result.php       # Affichage des résultats

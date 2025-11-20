@@ -19,7 +19,7 @@ abstract class Controller
         extract($data);
         
         // Chemin vers la vue
-        $viewPath = ROOT_PATH . '/views/' . $view . '.php';
+        $viewPath = ROOT_PATH . '/Views/' . $view . '.php';
         
         // Vérification que la vue existe
         if (file_exists($viewPath)) {

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - Système de Caisse</title>
-    <link rel="stylesheet" href="/views/style.css">
+    <link rel="stylesheet" href="/Views/style.css">
 </head>
 <body class="login-page">
     <div class="login-container">

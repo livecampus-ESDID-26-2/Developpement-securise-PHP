@@ -255,8 +255,20 @@ class Invoice
         $templatePath = __DIR__ . '/../Templates/email.html';
         
         if (!TemplateEngine::exists($templatePath)) {
-            // Fallback vers l'ancienne méthode si le template n'existe pas
-            return $this->toHtmlLegacy();
+            // Fallback simple si le template n'existe pas
+            return sprintf(
+                '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Facture</title></head>' .
+                '<body style="font-family: Arial, sans-serif; padding: 20px;">' .
+                '<h1>Facture %s</h1>' .
+                '<p>Date: %s</p>' .
+                '<p>Client: %s</p>' .
+                '<p>Montant rendu: %s €</p>' .
+                '</body></html>',
+                htmlspecialchars($this->invoiceNumber),
+                $this->invoiceDate->format('d/m/Y H:i:s'),
+                htmlspecialchars($this->userEmail ?? 'N/A'),
+                number_format($this->amountReturned, 2, ',', ' ')
+            );
         }
         
         return TemplateEngine::render($templatePath, $this->prepareTemplateVariables());
@@ -285,7 +297,13 @@ class Invoice
         
         if (!TemplateEngine::exists($templatePath)) {
             // Fallback texte simple
-            return $this->toTextLegacy();
+            return sprintf(
+                "FACTURE %s\nDate: %s\nClient: %s\nMontant rendu: %s €\n",
+                $this->invoiceNumber,
+                $this->invoiceDate->format('d/m/Y H:i:s'),
+                $this->userEmail ?? 'N/A',
+                number_format($this->amountReturned, 2, ',', ' ')
+            );
         }
         
         return TemplateEngine::render($templatePath, $this->prepareTemplateVariables());
@@ -320,111 +338,6 @@ class Invoice
     }
     
     /**
-     * Méthode legacy pour générer le HTML (fallback)
-     * @deprecated Utiliser toHtml() avec templates
-     */
-    private function toHtmlLegacy(): string
-    {
-        $html = '<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facture ' . htmlspecialchars($this->invoiceNumber) . '</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
-        .invoice-info { margin-bottom: 30px; }
-        .invoice-info table { width: 100%; }
-        .invoice-info td { padding: 5px; }
-        .details { background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
-        .change-detail { margin-top: 20px; }
-        .change-detail table { width: 100%; border-collapse: collapse; }
-        .change-detail th, .change-detail td { padding: 8px; border: 1px solid #ddd; text-align: left; }
-        .change-detail th { background-color: #333; color: white; }
-        .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>FACTURE DE RENDU DE MONNAIE</h1>
-        <h2>' . htmlspecialchars($this->invoiceNumber) . '</h2>
-    </div>
-    
-    <div class="invoice-info">
-        <table>
-            <tr>
-                <td><strong>Date :</strong></td>
-                <td>' . $this->invoiceDate->format('d/m/Y H:i:s') . '</td>
-            </tr>
-            <tr>
-                <td><strong>Client :</strong></td>
-                <td>' . ($this->userEmail ? htmlspecialchars($this->userEmail) : 'N/A') . '</td>
-            </tr>
-        </table>
-    </div>
-    
-    <div class="details">
-        <h3>Détails de la transaction</h3>
-        <table>
-            <tr>
-                <td><strong>Montant dû :</strong></td>
-                <td>' . number_format($this->amountDue, 2, ',', ' ') . ' €</td>
-            </tr>
-            <tr>
-                <td><strong>Montant donné :</strong></td>
-                <td>' . number_format($this->amountGiven, 2, ',', ' ') . ' €</td>
-            </tr>
-            <tr style="font-size: 1.2em; font-weight: bold;">
-                <td>Monnaie rendue :</td>
-                <td>' . number_format($this->amountReturned, 2, ',', ' ') . ' €</td>
-            </tr>
-        </table>
-    </div>
-    
-    <div class="change-detail">
-        <h3>Détail du rendu de monnaie</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Type</th>
-                    <th>Valeur</th>
-                    <th>Quantité</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>';
-        
-        foreach ($this->changeReturned as $key => $quantity) {
-            if ($quantity > 0) {
-                $value = $this->getCurrencyValue($key);
-                $label = $this->getCurrencyLabel($key);
-                $total = $value * $quantity / 100;
-                
-                $html .= '<tr>
-                    <td>' . htmlspecialchars($label) . '</td>
-                    <td>' . number_format($value / 100, 2, ',', ' ') . ' €</td>
-                    <td>' . $quantity . '</td>
-                    <td>' . number_format($total, 2, ',', ' ') . ' €</td>
-                </tr>';
-            }
-        }
-        
-        $html .= '</tbody>
-        </table>
-    </div>
-    
-    <div class="footer">
-        <p>Merci de votre confiance</p>
-        <p><em>Document généré automatiquement - ' . $this->invoiceDate->format('d/m/Y à H:i:s') . '</em></p>
-    </div>
-</body>
-</html>';
-        
-        return $html;
-    }
-    
-    /**
      * Obtenir la valeur en centimes d'une devise
      */
     private function getCurrencyValue(string $key): int
@@ -453,18 +366,6 @@ class Invoice
         ];
         
         return $labels[$key] ?? $key;
-    }
-    
-    /**
-     * Méthode legacy pour générer du texte (fallback)
-     * @deprecated Utiliser toMailText() avec templates
-     */
-    private function toTextLegacy(): string
-    {
-        $text = "FACTURE " . $this->invoiceNumber . "\n";
-        $text .= "Date: " . $this->invoiceDate->format('d/m/Y H:i:s') . "\n";
-        $text .= "Montant rendu: " . number_format($this->amountReturned, 2, ',', ' ') . " €\n";
-        return $text;
     }
 }
 

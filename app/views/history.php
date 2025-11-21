@@ -108,7 +108,8 @@
                                         'pending' => '⏳ En attente',
                                         'sent_email' => '✉️ Envoyée par email',
                                         'sent_mail' => '📮 Envoyée par courrier',
-                                        'printed' => '🖨️ Imprimée'
+                                        'printed' => '🖨️ Imprimée',
+                                        'sent_sms' => '📱 Envoyée par SMS'
                                     ];
                                     $status = $invoice->getStatus();
                                     ?>
@@ -132,6 +133,10 @@
                                 <button onclick="sendInvoiceFromHistory(<?php echo $invoice->getId(); ?>, 'mail', this)" 
                                         style="background: #ff9800; color: white; border: none; padding: 8px 16px; border-radius: 5px; font-weight: 600; cursor: pointer; font-size: 0.9rem;">
                                     📮 Courrier
+                                </button>
+                                <button onclick="sendInvoiceFromHistory(<?php echo $invoice->getId(); ?>, 'sms', this)" 
+                                        style="background: #00bcd4; color: white; border: none; padding: 8px 16px; border-radius: 5px; font-weight: 600; cursor: pointer; font-size: 0.9rem;">
+                                    📱 SMS
                                 </button>
                             </div>
                         </div>

@@ -49,6 +49,10 @@
                             📮 Envoyer par Courrier
                         </button>
                         
+                        <button onclick="sendInvoice(<?php echo $invoice_id; ?>, 'sms')" class="btn" style="background: #00bcd4; color: white; border: none; padding: 12px 24px; border-radius: 5px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+                            📱 Envoyer par SMS
+                        </button>
+                        
                         <button onclick="sendInvoice(<?php echo $invoice_id; ?>, 'all')" class="btn" style="background: #9c27b0; color: white; border: none; padding: 12px 24px; border-radius: 5px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
                             🚀 Tout Envoyer
                         </button>

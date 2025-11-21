@@ -103,6 +103,12 @@ _Affichage visuel de la monnaie à rendre avec images réelles des billets et pi
 
 _Historique complet des transactions de l'utilisateur avec détails visuels et statistiques_
 
+### Facture Utilisateur
+
+![Facture utilisateur](/docs/screenshots/user-invoice.png)
+
+_Exemple de Facture de l'utilisateur avec détails visuels_
+
 ### Dashboard Administrateur
 
 ![Dashboard admin](/docs/screenshots/admin-dashboard.png)

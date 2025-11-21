@@ -9,6 +9,7 @@ composer.lock
 storage/emails/*.html
 storage/mail/*.txt
 storage/prints/*.html
+storage/sms/*.txt
 
 # IDE
 .vscode/

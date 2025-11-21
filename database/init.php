@@ -166,7 +166,7 @@ try {
             change_returned JSON,
             invoice_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             user_id INT,
-            status ENUM('pending', 'sent_email', 'sent_mail', 'printed') DEFAULT 'pending',
+            status ENUM('pending', 'sent_email', 'sent_mail', 'printed', 'sent_sms') DEFAULT 'pending',
             FOREIGN KEY (transaction_id) REFERENCES transaction_history(id) ON DELETE CASCADE,
             FOREIGN KEY (user_id) REFERENCES users(id),
             INDEX idx_invoice_number (invoice_number),

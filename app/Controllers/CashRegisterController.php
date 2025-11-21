@@ -14,6 +14,7 @@ use App\Services\BaseInvoiceSender;
 use App\Services\EmailInvoiceSender;
 use App\Services\MailInvoiceSender;
 use App\Services\PrintInvoiceSender;
+use App\Services\SmsInvoiceSender;
 
 /**
  * Contrôleur de gestion de la caisse
@@ -320,7 +321,7 @@ class CashRegisterController extends Controller
     
     /**
      * Construire le sender selon la méthode d'envoi (Pattern Decorator)
-     * @param string $method Méthode d'envoi (email, mail, print, all)
+     * @param string $method Méthode d'envoi (email, mail, print, sms, all)
      * @return \App\Services\InvoiceSender Sender configuré
      */
     private function buildInvoiceSender(string $method): \App\Services\InvoiceSender
@@ -342,9 +343,14 @@ class CashRegisterController extends Controller
                 $sender = new PrintInvoiceSender($sender);
                 break;
             
+            case 'sms':
+                $sender = new SmsInvoiceSender($sender);
+                break;
+            
             case 'all':
                 // Exemple de composition de plusieurs décorateurs
                 $sender = new EmailInvoiceSender($sender);
+                $sender = new SmsInvoiceSender($sender);
                 $sender = new PrintInvoiceSender($sender);
                 $sender = new MailInvoiceSender($sender);
                 break;
@@ -371,6 +377,8 @@ class CashRegisterController extends Controller
                 return 'sent_mail';
             case 'print':
                 return 'printed';
+            case 'sms':
+                return 'sent_sms';
             case 'all':
                 return 'sent_email'; // Considéré comme envoyé par email principalement
             default:

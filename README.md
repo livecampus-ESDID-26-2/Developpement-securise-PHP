@@ -129,6 +129,32 @@ _Vue complète de toutes les transactions effectuées par tous les utilisateurs_
 
 _Statistiques et historique complet d'un utilisateur spécifique depuis le dashboard administrateur_
 
+### Templates de Factures
+
+#### Template Email (HTML)
+
+![Template Email](/docs/screenshots/template_email.png)
+
+_Template HTML riche pour l'envoi de factures par email avec design moderne et responsive_
+
+#### Template Impression (HTML)
+
+![Template Impression](/docs/screenshots/template_print.png)
+
+_Template HTML optimisé pour l'impression avec police monospace et mise en page adaptée_
+
+#### Template Courrier (TXT)
+
+![Template Courrier](/docs/screenshots/template_mail.png)
+
+_Template texte formaté pour envoi par courrier postal avec caractères de séparation ASCII_
+
+#### Template SMS (TXT)
+
+![Template SMS](/docs/screenshots/template_sms.png)
+
+_Template SMS avec log détaillé incluant métadonnées et message court_
+
 ---
 
 ## Architecture du Projet

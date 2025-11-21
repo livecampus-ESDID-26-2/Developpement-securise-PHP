@@ -11,6 +11,13 @@ else
     echo "✅ Dépendances Composer déjà installées"
 fi
 
+# Créer et donner les permissions au dossier storage
+if [ -d "/var/www/storage" ]; then
+    echo "📁 Configuration des permissions du dossier storage..."
+    chmod -R 777 /var/www/storage
+    echo "✅ Permissions configurées"
+fi
+
 # Attendre que MySQL soit prêt et initialiser la base de données
 echo "⏳ Attente de MySQL..."
 max_attempts=30

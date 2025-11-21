@@ -9,6 +9,7 @@ services:
       - ./app:/var/www/app
       - ./composer.json:/var/www/composer.json:ro
       - ./database:/var/www/database:ro
+      - ./storage:/var/www/storage
       - vendor:/var/www/vendor
     working_dir: /var/www/app
     depends_on:

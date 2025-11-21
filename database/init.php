@@ -57,11 +57,14 @@ try {
     $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$dbName}`");
     $pdo->exec("USE `{$dbName}`");
 
-    // Suppression des tables si elles existent
+    // Suppression des tables si elles existent (ordre important à cause des clés étrangères)
     echo "🗑️  Suppression des tables existantes...\n";
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+    $pdo->exec("DROP TABLE IF EXISTS invoices");
     $pdo->exec("DROP TABLE IF EXISTS transaction_history");
     $pdo->exec("DROP TABLE IF EXISTS cash_register_state");
     $pdo->exec("DROP TABLE IF EXISTS users");
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
     // Création de la table users
     echo "👥 Création de la table 'users'...\n";

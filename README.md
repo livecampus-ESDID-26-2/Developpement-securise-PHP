@@ -207,8 +207,7 @@ app/
 │   ├── email.html                     # Template HTML pour email
 │   ├── print.html                     # Template HTML pour impression
 │   ├── mail.txt                       # Template texte pour courrier
-│   ├── sms.txt                        # Template SMS avec log
-│   └── README.md                      # Documentation des templates
+│   └── sms.txt                        # Template SMS avec log
 │
 ├── Models/                            # Modèles (Accès base de données)
 │   ├── User.php                       # Modèle utilisateur (authentification)
@@ -293,8 +292,6 @@ Le projet implémente le **Pattern Decorator** pour le système de facturation, 
 - ✅ **Immutabilité** : L'objet créé ne peut pas être modifié (garantit la cohérence)
 - ✅ **Testabilité** : Facile à tester et à mocker dans les tests unitaires
 
-**Documentation complète** : Voir [docs/builder-pattern-example.md](docs/builder-pattern-example.md)
-
 **Classes impliquées :**
 
 - `InvoiceSender` : Interface définissant le contrat d'envoi
@@ -312,8 +309,6 @@ Le projet implémente le **Pattern Decorator** pour le système de facturation, 
 - ✅ **Combinable** : Possibilité d'envoyer par plusieurs canaux simultanément
 - ✅ **Open/Closed Principle** : Extension sans modification du code existant
 - ✅ **Single Responsibility** : Chaque décorateur a une responsabilité unique
-
-**Documentation complète** : Voir [app/Templates/README.md](app/Templates/README.md) pour le système de templates.
 
 ## Fonctionnalités
 
@@ -374,7 +369,6 @@ Le projet implémente le **Pattern Decorator** pour le système de facturation, 
 - **Système de templates** : Templates personnalisables avec variables `{{variable}}`
   - Templates HTML pour email/impression
   - Templates TXT pour courrier/SMS
-  - Documentation complète dans `app/Templates/README.md`
 - **Pattern Decorator** : Architecture extensible pour ajouter facilement de nouveaux canaux
 - **Statuts de facture** :
   - `pending` : En attente
@@ -608,8 +602,6 @@ Les identifiants de connexion MySQL sont gérés de manière sécurisée :
 - ✅ Injection via variables d'environnement (pas de mots de passe en dur dans le code)
 - ✅ Script d'initialisation PHP `init.php` qui utilise les variables d'environnement
 - ✅ Pas de fichiers SQL avec des mots de passe en clair
-
-**Documentation complète** : Voir `database/SECURITY.md` pour plus de détails sur la sécurité de la base de données.
 
 ## Configuration
 

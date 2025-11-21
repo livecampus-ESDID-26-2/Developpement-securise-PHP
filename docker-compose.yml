@@ -11,6 +11,7 @@ services:
       - ./database:/var/www/database:ro
       - ./storage:/var/www/storage
       - vendor:/var/www/vendor
+      - ./app/Templates:/var/www/app/Templates:ro
     working_dir: /var/www/app
     depends_on:
       - db

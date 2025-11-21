@@ -49,7 +49,8 @@ Application PHP de gestion de caisse enregistreuse avec authentification multi-u
 - **Calcul automatique** : Calculer automatiquement la monnaie à rendre
 - **Algorithmes multiples** : Optimiser le rendu (algorithme glouton standard ou inversé)
 - **Gestion personnalisée** : Chaque utilisateur gère sa propre caisse
-- **Historique détaillé** : Suivi complet des transactions par utilisateur
+- **Système de facturation** : Génération et envoi de factures multi-formats (Email, Courrier, Impression, SMS)
+- **Historique détaillé** : Suivi complet des transactions par utilisateur avec factures associées
 - **Dashboard Admin** : Vue d'ensemble de tous les utilisateurs et leurs activités
 - **Affichage visuel** : Interface moderne avec images réelles de billets et pièces
 
@@ -66,6 +67,7 @@ Application PHP de gestion de caisse enregistreuse avec authentification multi-u
   - [Calcul de Monnaie](#calcul-de-monnaie)
   - [Interface Utilisateur](#interface-utilisateur)
   - [Gestion de Caisse (Utilisateur)](#gestion-de-caisse-utilisateur)
+  - [Système de Facturation](#système-de-facturation)
   - [Dashboard Administrateur](#dashboard-administrateur)
 - [Installation et Utilisation](#installation-et-utilisation)
   - [Prérequis](#prérequis)
@@ -162,29 +164,56 @@ app/
 │   └── CashRegisterBuilder.php        # Pattern Builder pour construire l'état
 │
 ├── Entities/                         # Entités (Objets métier immutables)
-│   └── CashRegisterState.php          # État immutable de la caisse
+│   ├── CashRegisterState.php          # État immutable de la caisse
+│   └── Invoice.php                    # Entité facture immutable
+│
+├── Services/                         # Services (Pattern Decorator)
+│   ├── InvoiceSender.php              # Interface pour l'envoi de factures
+│   ├── BaseInvoiceSender.php          # Composant de base
+│   ├── InvoiceSenderDecorator.php     # Décorateur abstrait
+│   ├── EmailInvoiceSender.php         # Envoi par email
+│   ├── PrintInvoiceSender.php         # Envoi par impression
+│   ├── MailInvoiceSender.php          # Envoi par courrier postal
+│   ├── SmsInvoiceSender.php           # Envoi par SMS
+│   └── TemplateEngine.php             # Moteur de templates
+│
+├── Templates/                        # Templates de factures
+│   ├── email.html                     # Template HTML pour email
+│   ├── print.html                     # Template HTML pour impression
+│   ├── mail.txt                       # Template texte pour courrier
+│   ├── sms.txt                        # Template SMS avec log
+│   └── README.md                      # Documentation des templates
 │
 ├── Models/                            # Modèles (Accès base de données)
 │   ├── User.php                       # Modèle utilisateur (authentification)
 │   ├── CashRegister.php               # Modèle caisse (état, calculs)
 │   ├── Transaction.php                # Modèle transaction (historique)
+│   ├── Invoice.php                    # Modèle facture (CRUD)
 │   └── Currency.php                   # Configuration des billets/pièces
 │
 ├── Controllers/                       # Contrôleurs (Logique applicative)
 │   ├── AuthController.php             # Authentification (login/logout)
 │   ├── CashRegisterController.php     # Gestion de la caisse (transactions)
+│   ├── InvoiceController.php          # Gestion des factures (view/send)
 │   └── AdminController.php            # Administration (dashboard, stats)
 │
 └── Views/                             # Vues (Interface utilisateur)
     ├── login.php                      # Page de connexion
     ├── cash_register_form.php         # Formulaire de saisie caisse
-    ├── cash_register_result.php       # Affichage des résultats
-    ├── history.php                    # Historique utilisateur
+    ├── cash_register_result.php       # Affichage des résultats + facture
+    ├── history.php                    # Historique utilisateur + factures
+    ├── invoice_view.php               # Visualisation de facture
     ├── admin/                         # Vues administrateur
     │   ├── dashboard.php              # Dashboard admin
     │   ├── history.php                # Historique global
     │   └── user_detail.php            # Détail utilisateur
     └── style.css                      # Styles CSS (1150+ lignes)
+
+storage/                              # Fichiers générés
+├── emails/                           # Factures email (HTML)
+├── prints/                           # Factures impression (HTML)
+├── mail/                             # Factures courrier (TXT)
+└── sms/                              # Logs SMS (TXT)
 
 database/
 └── init.php                           # Script d'initialisation de la BDD (PHP)
@@ -221,6 +250,10 @@ Réponse HTTP
 
 Le projet implémente le **Pattern Builder** pour construire l'état de la caisse de manière fluide et flexible.
 
+### Pattern Decorator
+
+Le projet implémente le **Pattern Decorator** pour le système de facturation, permettant d'ajouter dynamiquement des fonctionnalités d'envoi de factures.
+
 **Classes impliquées :**
 
 - `CashRegisterState` : Classe immutable représentant l'état de la caisse (billets + pièces)
@@ -234,34 +267,27 @@ Le projet implémente le **Pattern Builder** pour construire l'état de la caiss
 - ✅ **Immutabilité** : L'objet créé ne peut pas être modifié (garantit la cohérence)
 - ✅ **Testabilité** : Facile à tester et à mocker dans les tests unitaires
 
-**Exemples d'utilisation :**
-
-```php
-use App\Builders\CashRegisterBuilder;
-use App\Entities\CashRegisterState;
-
-// 1. Caisse avec valeurs par défaut
-$cashRegister = CashRegisterBuilder::withDefaults()->build();
-
-// 2. Caisse vide
-$cashRegister = CashRegisterBuilder::empty()->build();
-
-// 3. Construction fluide personnalisée
-$cashRegister = CashRegisterBuilder::create()
-    ->setBill500(2)
-    ->setBill200(5)
-    ->setCoin2(100)
-    ->setCoin1(150)
-    ->build();
-
-// 4. Modifier un état existant
-$newState = CashRegisterBuilder::fromState($initialState)
-    ->add('coin_2', 50)     // Ajouter 50 pièces de 2€
-    ->remove('bill_10', 3)  // Retirer 3 billets de 10€
-    ->build();
-```
-
 **Documentation complète** : Voir [docs/builder-pattern-example.md](docs/builder-pattern-example.md)
+
+**Classes impliquées :**
+
+- `InvoiceSender` : Interface définissant le contrat d'envoi
+- `BaseInvoiceSender` : Composant de base créant la facture en BDD
+- `InvoiceSenderDecorator` : Décorateur abstrait pour enrichir les fonctionnalités
+- `EmailInvoiceSender` : Décorateur pour envoi par email (HTML)
+- `PrintInvoiceSender` : Décorateur pour impression (HTML)
+- `MailInvoiceSender` : Décorateur pour courrier postal (TXT)
+- `SmsInvoiceSender` : Décorateur pour envoi SMS (TXT)
+
+**Avantages :**
+
+- ✅ **Flexibilité** : Ajout dynamique de fonctionnalités d'envoi
+- ✅ **Extensibilité** : Facile d'ajouter de nouveaux modes d'envoi
+- ✅ **Combinable** : Possibilité d'envoyer par plusieurs canaux simultanément
+- ✅ **Open/Closed Principle** : Extension sans modification du code existant
+- ✅ **Single Responsibility** : Chaque décorateur a une responsabilité unique
+
+**Documentation complète** : Voir [app/Templates/README.md](app/Templates/README.md) pour le système de templates.
 
 ## Fonctionnalités
 
@@ -307,6 +333,38 @@ $newState = CashRegisterBuilder::fromState($initialState)
   - Page dédiée avec l'historique complet de l'utilisateur
   - Détails visuels avec images des billets/pièces rendus
   - Statistiques (nombre de transactions, total rendu)
+  - Accès aux factures associées à chaque transaction
+
+### Système de Facturation
+
+- **Génération automatique** : Création d'une facture pour chaque transaction
+- **Numéro unique** : Format `INV-YYYYMMDD-HHMMSS` (ex: `INV-20251121-143045`)
+- **Association** : Lien entre facture et transaction via clé étrangère
+- **Multi-formats** : Support de 4 formats d'envoi différents
+  - 📧 **Email** : Format HTML riche avec styles inline
+  - 🖨️ **Impression** : Format HTML optimisé pour impression
+  - 📮 **Courrier** : Format texte ASCII pour envoi postal
+  - 📱 **SMS** : Format texte court avec log détaillé
+- **Système de templates** : Templates personnalisables avec variables `{{variable}}`
+  - Templates HTML pour email/impression
+  - Templates TXT pour courrier/SMS
+  - Documentation complète dans `app/Templates/README.md`
+- **Pattern Decorator** : Architecture extensible pour ajouter facilement de nouveaux canaux
+- **Statuts de facture** :
+  - `pending` : En attente
+  - `sent_email` : Envoyée par email
+  - `sent_print` : Préparée pour impression
+  - `sent_mail` : Préparée pour courrier
+  - `sent_sms` : Envoyée par SMS
+- **Visualisation** : Consultation de la facture au format HTML dans le navigateur
+- **Stockage** : Fichiers générés dans `storage/` (emails, prints, mail, sms)
+- **Actions disponibles** :
+  - 👁️ Voir la facture
+  - 📧 Envoyer par email
+  - 🖨️ Préparer pour impression
+  - 📮 Préparer pour courrier
+  - 📱 Envoyer par SMS
+  - 📤 Envoyer par tous les moyens
 
 ### Dashboard Administrateur
 
@@ -466,8 +524,11 @@ Après cette opération :
 - **PSR-4** : Autoloading automatique des classes
 - **Singleton** : Pattern pour la connexion BDD
 - **Builder** : Pattern créationnel pour construire l'état de la caisse
+- **Decorator** : Pattern structurel pour le système de facturation
+- **Entity** : Objets métier immutables (CashRegisterState, Invoice)
 - **Front Controller** : Point d'entrée unique
 - **Routing** : URLs propres et RESTful
+- **Template Engine** : Système de templates avec variables `{{variable}}`
 
 ### Frontend
 
@@ -565,6 +626,10 @@ App\Controllers\*   → app/Controllers/
   - Stocke : montants, algorithme, valeur préférée, user_id
   - JSON : change_returned, register_before, register_after
   - Permet le filtrage par utilisateur
+- `invoices` : Factures associées aux transactions
+  - Colonnes : id, transaction_id (FK), invoice_number (unique), user_id, status
+  - Lien avec transaction_history via clé étrangère
+  - Statuts : pending, sent_email, sent_print, sent_mail, sent_sms
 
 **Utilisateurs de démonstration** :
 | Email | Mot de passe | Rôle | Accès |
@@ -588,9 +653,10 @@ Ce projet fait partie du module "**Développement Sécurisé PHP**" à **LiveCam
 
 - ✅ **MVC** : Séparation Model-View-Controller
 - ✅ **POO avancée** : Classes abstraites, héritage, namespaces PSR-4
-- ✅ **Design Patterns** : Singleton, Front Controller, MVC
+- ✅ **Design Patterns** : Singleton, Builder, Decorator, Front Controller, Entity
 - ✅ **SOLID** : Principes de conception orientée objet
 - ✅ **Autoloading** : PSR-4 avec chargement automatique
+- ✅ **Template Engine** : Système de templates personnalisé
 
 #### Développement PHP
 
@@ -614,8 +680,11 @@ Ce projet fait partie du module "**Développement Sécurisé PHP**" à **LiveCam
 
 - 🔐 Système d'authentification multi-utilisateurs
 - 👥 Gestion des rôles (utilisateur/administrateur)
-- 📊 Historique avec filtrage par utilisateur
-- 💾 Persistance des données en base
+- 🧾 Système de facturation complet avec envoi multi-formats
+- 📧 Génération de factures HTML/TXT avec templates personnalisables
+- 🎨 Pattern Decorator pour extensibilité des modes d'envoi
+- 📊 Historique avec filtrage par utilisateur et factures associées
+- 💾 Persistance des données en base avec relations
 - 🎨 Interface moderne et responsive
 - 📈 Dashboard administrateur avec statistiques
 

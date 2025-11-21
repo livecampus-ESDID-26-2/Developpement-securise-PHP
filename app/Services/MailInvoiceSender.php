@@ -72,14 +72,8 @@ class MailInvoiceSender extends InvoiceSenderDecorator
         
         $logFile = $logDir . '/mail_' . date('Y-m-d_H-i-s') . '_' . $invoice->getInvoiceNumber() . '.txt';
         
-        $mailContent = "=== DEMANDE D'ENVOI PAR COURRIER POSTAL ===\n\n";
-        $mailContent .= "Date : " . date('d/m/Y H:i:s') . "\n";
-        $mailContent .= "Facture : " . $invoice->getInvoiceNumber() . "\n";
-        $mailContent .= "Utilisateur : " . ($invoice->getUserEmail() ?? 'N/A') . "\n";
-        $mailContent .= "Montant : " . number_format($invoice->getAmountReturned(), 2, ',', ' ') . " €\n\n";
-        $mailContent .= "=== CONTENU DE LA FACTURE ===\n\n";
-        $mailContent .= strip_tags($invoice->toHtml());
-        $mailContent .= "\n\n=== FIN ===\n";
+        // Utiliser le template de courrier
+        $mailContent = $invoice->toMailText();
         
         return file_put_contents($logFile, $mailContent) !== false;
         

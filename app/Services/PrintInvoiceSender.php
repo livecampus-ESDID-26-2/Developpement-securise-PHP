@@ -72,8 +72,8 @@ class PrintInvoiceSender extends InvoiceSenderDecorator
         
         $printFile = $printDir . '/print_' . date('Y-m-d_H-i-s') . '_' . $invoice->getInvoiceNumber() . '.html';
         
-        // Générer le HTML avec style d'impression
-        $printContent = $this->generatePrintableHtml($invoice);
+        // Utiliser le template d'impression
+        $printContent = $invoice->toPrintHtml();
         
         return file_put_contents($printFile, $printContent) !== false;
         
@@ -81,37 +81,6 @@ class PrintInvoiceSender extends InvoiceSenderDecorator
         // - Utiliser CUPS sur Linux
         // - Utiliser l'API Windows Print
         // - Ou un service d'impression cloud
-    }
-    
-    /**
-     * Générer le HTML optimisé pour l'impression
-     * @param Invoice $invoice Facture
-     * @return string HTML
-     */
-    private function generatePrintableHtml(Invoice $invoice): string
-    {
-        $html = $invoice->toHtml();
-        
-        // Ajouter des styles spécifiques pour l'impression
-        $printStyles = '
-<style media="print">
-    @page {
-        size: A4;
-        margin: 2cm;
-    }
-    body {
-        font-size: 12pt;
-    }
-    .no-print {
-        display: none;
-    }
-</style>
-';
-        
-        // Insérer les styles d'impression dans le HTML
-        $html = str_replace('</head>', $printStyles . '</head>', $html);
-        
-        return $html;
     }
 }
 

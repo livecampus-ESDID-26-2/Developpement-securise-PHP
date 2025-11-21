@@ -2,6 +2,8 @@
 
 namespace App\Entities;
 
+use App\Services\TemplateEngine;
+
 /**
  * Classe Invoice - Représente une facture
  * Entité immutable générée après une transaction
@@ -167,9 +169,161 @@ class Invoice
     }
     
     /**
-     * Générer le contenu HTML de la facture
+     * Préparer les variables pour les templates
+     * @return array Tableau de variables
+     */
+    private function prepareTemplateVariables(): array
+    {
+        $currencyLabels = [
+            'bill_500' => 'Billet 500€', 'bill_200' => 'Billet 200€', 'bill_100' => 'Billet 100€',
+            'bill_50' => 'Billet 50€', 'bill_20' => 'Billet 20€', 'bill_10' => 'Billet 10€',
+            'bill_5' => 'Billet 5€', 'coin_2' => 'Pièce 2€', 'coin_1' => 'Pièce 1€',
+            'coin_050' => 'Pièce 0,50€', 'coin_020' => 'Pièce 0,20€', 'coin_010' => 'Pièce 0,10€',
+            'coin_005' => 'Pièce 0,05€', 'coin_002' => 'Pièce 0,02€', 'coin_001' => 'Pièce 0,01€'
+        ];
+        
+        // Générer les lignes du tableau de détail (HTML)
+        $changeDetailRows = '';
+        foreach ($this->changeReturned as $key => $quantity) {
+            if ($quantity > 0) {
+                $value = $this->getCurrencyValue($key) / 100;
+                $label = $currencyLabels[$key] ?? $key;
+                $total = $value * $quantity;
+                
+                $changeDetailRows .= sprintf(
+                    '<tr><td>%s</td><td>%s €</td><td>%d</td><td>%s €</td></tr>',
+                    htmlspecialchars($label),
+                    number_format($value, 2, ',', ' '),
+                    $quantity,
+                    number_format($total, 2, ',', ' ')
+                );
+            }
+        }
+        
+        // Générer le détail texte (pour mail/sms)
+        $changeDetailText = '';
+        foreach ($this->changeReturned as $key => $quantity) {
+            if ($quantity > 0) {
+                $value = $this->getCurrencyValue($key) / 100;
+                $label = $currencyLabels[$key] ?? $key;
+                $total = $value * $quantity;
+                
+                $changeDetailText .= sprintf(
+                    "%-20s x %2d  =  %8s €\n",
+                    $label,
+                    $quantity,
+                    number_format($total, 2, ',', ' ')
+                );
+            }
+        }
+        
+        return [
+            'invoice_number' => $this->invoiceNumber,
+            'invoice_date' => $this->invoiceDate->format('d/m/Y à H:i:s'),
+            'user_email' => $this->userEmail ?? 'N/A',
+            'status' => $this->getStatusLabel(),
+            'amount_due' => number_format($this->amountDue, 2, ',', ' '),
+            'amount_given' => number_format($this->amountGiven, 2, ',', ' '),
+            'amount_returned' => number_format($this->amountReturned, 2, ',', ' '),
+            'change_detail_rows' => $changeDetailRows,
+            'change_detail_text' => $changeDetailText
+        ];
+    }
+    
+    /**
+     * Obtenir le libellé du statut
+     * @return string Libellé du statut
+     */
+    private function getStatusLabel(): string
+    {
+        $labels = [
+            'pending' => 'En attente',
+            'sent_email' => 'Envoyée par email',
+            'sent_mail' => 'Envoyée par courrier',
+            'printed' => 'Imprimée',
+            'sent_sms' => 'Envoyée par SMS'
+        ];
+        
+        return $labels[$this->status] ?? $this->status;
+    }
+    
+    /**
+     * Générer le contenu HTML de la facture (pour email)
      */
     public function toHtml(): string
+    {
+        $templatePath = __DIR__ . '/../Templates/email.html';
+        
+        if (!TemplateEngine::exists($templatePath)) {
+            // Fallback vers l'ancienne méthode si le template n'existe pas
+            return $this->toHtmlLegacy();
+        }
+        
+        return TemplateEngine::render($templatePath, $this->prepareTemplateVariables());
+    }
+    
+    /**
+     * Générer le contenu HTML pour l'impression
+     */
+    public function toPrintHtml(): string
+    {
+        $templatePath = __DIR__ . '/../Templates/print.html';
+        
+        if (!TemplateEngine::exists($templatePath)) {
+            return $this->toHtml(); // Fallback vers email template
+        }
+        
+        return TemplateEngine::render($templatePath, $this->prepareTemplateVariables());
+    }
+    
+    /**
+     * Générer le contenu texte pour le courrier postal
+     */
+    public function toMailText(): string
+    {
+        $templatePath = __DIR__ . '/../Templates/mail.txt';
+        
+        if (!TemplateEngine::exists($templatePath)) {
+            // Fallback texte simple
+            return $this->toTextLegacy();
+        }
+        
+        return TemplateEngine::render($templatePath, $this->prepareTemplateVariables());
+    }
+    
+    /**
+     * Générer le fichier SMS complet (message + log)
+     * @param string $phoneNumber Numéro de téléphone
+     * @return string Contenu du fichier SMS
+     */
+    public function toSmsText(string $phoneNumber = 'N/A'): string
+    {
+        $templatePath = __DIR__ . '/../Templates/sms.txt';
+        
+        $variables = $this->prepareTemplateVariables();
+        $variables['date_envoi'] = date('d/m/Y H:i:s');
+        $variables['phone_number'] = $phoneNumber;
+        
+        // Extraire le message court du template (ligne entre "--- MESSAGE ---" et "---------------")
+        $messageShort = "Facture {$this->invoiceNumber}: Montant rendu " . 
+                       number_format($this->amountReturned, 2, ',', ' ') . "€. " .
+                       "Consultez votre facture sur notre site. Merci!";
+        
+        $variables['message_length'] = strlen($messageShort);
+        
+        if (!TemplateEngine::exists($templatePath)) {
+            // Fallback texte simple
+            return "SMS envoyé au {$phoneNumber}\nMessage: {$messageShort}\nFacture: {$this->invoiceNumber}";
+        }
+        
+        return TemplateEngine::render($templatePath, $variables);
+    }
+    
+    /**
+     * Méthode legacy pour générer le HTML (fallback)
+     * @deprecated Utiliser toHtml() avec templates
+     */
+    private function toHtmlLegacy(): string
     {
         $html = '<!DOCTYPE html>
 <html lang="fr">
@@ -299,6 +453,18 @@ class Invoice
         ];
         
         return $labels[$key] ?? $key;
+    }
+    
+    /**
+     * Méthode legacy pour générer du texte (fallback)
+     * @deprecated Utiliser toMailText() avec templates
+     */
+    private function toTextLegacy(): string
+    {
+        $text = "FACTURE " . $this->invoiceNumber . "\n";
+        $text .= "Date: " . $this->invoiceDate->format('d/m/Y H:i:s') . "\n";
+        $text .= "Montant rendu: " . number_format($this->amountReturned, 2, ',', ' ') . " €\n";
+        return $text;
     }
 }
 

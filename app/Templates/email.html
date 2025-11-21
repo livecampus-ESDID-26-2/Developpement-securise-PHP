@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Facture {{invoice_number}}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+      }
+      .header h1 {
+        color: #667eea;
+        margin: 0 0 10px 0;
+      }
+      .header h2 {
+        color: #333;
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .invoice-info {
+        margin-bottom: 30px;
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+      }
+      .invoice-info table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .invoice-info td {
+        padding: 8px;
+        border-bottom: 1px solid #dee2e6;
+      }
+      .invoice-info td:first-child {
+        font-weight: bold;
+        width: 150px;
+      }
+      .details {
+        background-color: #e3f2fd;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        border-left: 4px solid #2196f3;
+      }
+      .details h3 {
+        margin-top: 0;
+        color: #1976d2;
+      }
+      .details table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .details td {
+        padding: 10px;
+      }
+      .details td:first-child {
+        font-weight: bold;
+      }
+      .highlight-row {
+        font-size: 1.3em;
+        font-weight: bold;
+        background: #fff;
+        color: #4caf50;
+      }
+      .change-detail {
+        margin-top: 30px;
+      }
+      .change-detail h3 {
+        color: #333;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 10px;
+      }
+      .change-detail table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+      .change-detail th,
+      .change-detail td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+      .change-detail th {
+        background-color: #667eea;
+        color: white;
+        font-weight: 600;
+      }
+      .change-detail tr:nth-child(even) {
+        background-color: #f8f9fa;
+      }
+      .footer {
+        text-align: center;
+        margin-top: 50px;
+        padding-top: 20px;
+        border-top: 2px solid #ddd;
+        color: #666;
+      }
+      .footer p {
+        margin: 5px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>💰 FACTURE DE RENDU DE MONNAIE</h1>
+        <h2>{{invoice_number}}</h2>
+      </div>
+
+      <div class="invoice-info">
+        <table>
+          <tr>
+            <td>Date :</td>
+            <td>{{invoice_date}}</td>
+          </tr>
+          <tr>
+            <td>Client :</td>
+            <td>{{user_email}}</td>
+          </tr>
+          <tr>
+            <td>Statut :</td>
+            <td>{{status}}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="details">
+        <h3>📊 Détails de la transaction</h3>
+        <table>
+          <tr>
+            <td>Montant dû :</td>
+            <td>{{amount_due}} €</td>
+          </tr>
+          <tr>
+            <td>Montant donné :</td>
+            <td>{{amount_given}} €</td>
+          </tr>
+          <tr class="highlight-row">
+            <td>Monnaie rendue :</td>
+            <td>{{amount_returned}} €</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="change-detail">
+        <h3>💵 Détail du rendu de monnaie</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Dénomination</th>
+              <th>Valeur unitaire</th>
+              <th>Quantité</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{change_detail_rows}}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        <p><strong>Merci de votre confiance</strong></p>
+        <p><em>Document généré automatiquement le {{invoice_date}}</em></p>
+        <p style="font-size: 0.9rem; margin-top: 15px">
+          🏢 Système de Caisse - LiveCampus<br />
+          📧 support@cash-register.com | 📞 01 23 45 67 89
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

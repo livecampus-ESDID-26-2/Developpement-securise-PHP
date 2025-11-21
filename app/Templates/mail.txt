@@ -1,0 +1,37 @@
+==============================================
+    FACTURE DE RENDU DE MONNAIE
+==============================================
+
+Facture N° : {{invoice_number}}
+Date        : {{invoice_date}}
+Client      : {{user_email}}
+Statut      : {{status}}
+
+==============================================
+         DÉTAILS DE LA TRANSACTION
+==============================================
+
+Montant dû      : {{amount_due}} €
+Montant donné   : {{amount_given}} €
+--------------------------------------------
+MONNAIE RENDUE  : {{amount_returned}} €
+============================================== 
+
+==============================================
+      DÉTAIL DU RENDU DE MONNAIE
+==============================================
+
+{{change_detail_text}}
+
+==============================================
+
+Merci de votre confiance.
+
+---
+Système de Caisse - LiveCampus
+support@cash-register.com
+01 23 45 67 89
+
+Document généré automatiquement le {{invoice_date}}
+==============================================
+

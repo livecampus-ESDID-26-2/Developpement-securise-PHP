@@ -1,0 +1,19 @@
+=== SMS SIMULÉ ===
+
+Date d'envoi : {{date_envoi}}
+Destinataire : {{phone_number}}
+Email : {{user_email}}
+Facture : {{invoice_number}}
+Longueur : {{message_length}} caractères
+
+--- MESSAGE ---
+Facture {{invoice_number}}: Montant rendu {{amount_returned}}€. Consultez votre facture sur notre site. Merci!
+---------------
+
+=== DÉTAILS FACTURE ===
+Montant dû      : {{amount_due}} €
+Montant donné   : {{amount_given}} €
+Montant rendu   : {{amount_returned}} €
+
+=== FIN ===
+

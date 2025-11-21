@@ -72,17 +72,17 @@ class SmsInvoiceSender extends InvoiceSenderDecorator
     }
     
     /**
-     * Construire le message SMS (limité à 160 caractères)
+     * Construire le message SMS court (extrait du template)
      * @param Invoice $invoice Facture
      * @return string Message SMS
      */
     private function buildSmsMessage(Invoice $invoice): string
     {
-        // Message court pour SMS
+        // Message court pour l'envoi réel
         return sprintf(
-            "Facture %s: Montant rendu %.2f€. Consultez votre facture sur notre site. Merci!",
+            "Facture %s: Montant rendu %s€. Consultez votre facture sur notre site. Merci!",
             $invoice->getInvoiceNumber(),
-            $invoice->getAmountReturned()
+            number_format($invoice->getAmountReturned(), 2, ',', ' ')
         );
     }
     
@@ -118,20 +118,8 @@ class SmsInvoiceSender extends InvoiceSenderDecorator
         
         $logFile = $logDir . '/sms_' . date('Y-m-d_H-i-s') . '_' . $invoice->getInvoiceNumber() . '.txt';
         
-        $smsContent = "=== SMS SIMULÉ ===\n\n";
-        $smsContent .= "Date d'envoi : " . date('d/m/Y H:i:s') . "\n";
-        $smsContent .= "Destinataire : " . $to . "\n";
-        $smsContent .= "Email : " . ($invoice->getUserEmail() ?? 'N/A') . "\n";
-        $smsContent .= "Facture : " . $invoice->getInvoiceNumber() . "\n";
-        $smsContent .= "Longueur : " . strlen($message) . " caractères\n\n";
-        $smsContent .= "--- MESSAGE ---\n";
-        $smsContent .= $message . "\n";
-        $smsContent .= "---------------\n\n";
-        $smsContent .= "=== DÉTAILS FACTURE ===\n";
-        $smsContent .= "Montant dû : " . number_format($invoice->getAmountDue(), 2, ',', ' ') . " €\n";
-        $smsContent .= "Montant donné : " . number_format($invoice->getAmountGiven(), 2, ',', ' ') . " €\n";
-        $smsContent .= "Montant rendu : " . number_format($invoice->getAmountReturned(), 2, ',', ' ') . " €\n";
-        $smsContent .= "\n=== FIN ===\n";
+        // Utiliser le template SMS (qui contient le log complet)
+        $smsContent = $invoice->toSmsText($to);
         
         return file_put_contents($logFile, $smsContent) !== false;
         

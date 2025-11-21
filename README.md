@@ -193,8 +193,10 @@ app/
 │   ├── CashRegisterState.php          # État immutable de la caisse
 │   └── Invoice.php                    # Entité facture immutable
 │
+├── Interfaces/                       # Interfaces (Contrats)
+│   └── InvoiceSenderInterface.php     # Interface pour l'envoi de factures
+│
 ├── Services/                         # Services (Pattern Decorator)
-│   ├── InvoiceSender.php              # Interface pour l'envoi de factures
 │   ├── BaseInvoiceSender.php          # Composant de base
 │   ├── InvoiceSenderDecorator.php     # Décorateur abstrait
 │   ├── EmailInvoiceSender.php         # Envoi par email
@@ -275,10 +277,6 @@ Réponse HTTP
 
 Le projet implémente le **Pattern Builder** pour construire l'état de la caisse de manière fluide et flexible.
 
-### Pattern Decorator
-
-Le projet implémente le **Pattern Decorator** pour le système de facturation, permettant d'ajouter dynamiquement des fonctionnalités d'envoi de factures.
-
 **Classes impliquées :**
 
 - `CashRegisterState` : Classe immutable représentant l'état de la caisse (billets + pièces)
@@ -292,9 +290,13 @@ Le projet implémente le **Pattern Decorator** pour le système de facturation, 
 - ✅ **Immutabilité** : L'objet créé ne peut pas être modifié (garantit la cohérence)
 - ✅ **Testabilité** : Facile à tester et à mocker dans les tests unitaires
 
+### Pattern Decorator
+
+Le projet implémente le **Pattern Decorator** pour le système de facturation, permettant d'ajouter dynamiquement des fonctionnalités d'envoi de factures.
+
 **Classes impliquées :**
 
-- `InvoiceSender` : Interface définissant le contrat d'envoi
+- `InvoiceSenderInterface` : Interface définissant le contrat d'envoi (`app/Interfaces/`)
 - `BaseInvoiceSender` : Composant de base créant la facture en BDD
 - `InvoiceSenderDecorator` : Décorateur abstrait pour enrichir les fonctionnalités
 - `EmailInvoiceSender` : Décorateur pour envoi par email (HTML)

@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Services;
+namespace App\Interfaces;
 
 use App\Entities\Invoice;
 
 /**
- * Interface InvoiceSender - Contrat pour l'envoi de factures
+ * Interface InvoiceSenderInterface - Contrat pour l'envoi de factures
  * Pattern Decorator pour l'envoi de factures par différents canaux
  */
-interface InvoiceSender
+interface InvoiceSenderInterface
 {
     /**
      * Envoyer une facture

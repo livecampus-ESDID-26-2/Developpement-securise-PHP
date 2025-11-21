@@ -3,20 +3,21 @@
 namespace App\Services;
 
 use App\Entities\Invoice;
+use App\Interfaces\InvoiceSenderInterface;
 
 /**
  * Classe abstraite InvoiceSenderDecorator - Décorateur de base pour l'envoi de factures
  * Pattern Decorator - Permet d'ajouter dynamiquement des fonctionnalités d'envoi
  */
-abstract class InvoiceSenderDecorator implements InvoiceSender
+abstract class InvoiceSenderDecorator implements InvoiceSenderInterface
 {
-    protected InvoiceSender $wrappedSender;
+    protected InvoiceSenderInterface $wrappedSender;
     
     /**
      * Constructeur
-     * @param InvoiceSender $sender Service d'envoi à décorer
+     * @param InvoiceSenderInterface $sender Service d'envoi à décorer
      */
-    public function __construct(InvoiceSender $sender)
+    public function __construct(InvoiceSenderInterface $sender)
     {
         $this->wrappedSender = $sender;
     }

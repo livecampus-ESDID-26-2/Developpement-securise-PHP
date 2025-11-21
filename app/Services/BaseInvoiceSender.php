@@ -3,12 +3,13 @@
 namespace App\Services;
 
 use App\Entities\Invoice;
+use App\Interfaces\InvoiceSenderInterface;
 
 /**
  * Classe BaseInvoiceSender - Implémentation de base pour l'envoi de factures
  * Cette classe sert de composant concret dans le pattern Decorator
  */
-class BaseInvoiceSender implements InvoiceSender
+class BaseInvoiceSender implements InvoiceSenderInterface
 {
     protected array $logs = [];
     protected string $status = 'pending';

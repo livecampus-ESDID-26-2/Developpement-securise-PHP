@@ -322,9 +322,9 @@ class CashRegisterController extends Controller
     /**
      * Construire le sender selon la méthode d'envoi (Pattern Decorator)
      * @param string $method Méthode d'envoi (email, mail, print, sms, all)
-     * @return \App\Services\InvoiceSender Sender configuré
+     * @return \App\Interfaces\InvoiceSenderInterface Sender configuré
      */
-    private function buildInvoiceSender(string $method): \App\Services\InvoiceSender
+    private function buildInvoiceSender(string $method): \App\Interfaces\InvoiceSenderInterface
     {
         // Créer le composant de base
         $sender = new BaseInvoiceSender();

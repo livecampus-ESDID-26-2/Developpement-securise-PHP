@@ -181,7 +181,7 @@ app/
     └── style.css                      # Styles CSS (1150+ lignes)
 
 database/
-└── init.sql                           # Script d'initialisation de la BDD
+└── init.php                           # Script d'initialisation de la BDD (PHP)
 ```
 
 ### Flux de l'application MVC
@@ -402,7 +402,7 @@ docker compose up
    - Construire l'image PHP avec les extensions PDO MySQL
    - Installer Composer et les dépendances PHP (autoloader PSR-4)
    - Télécharger l'image MySQL
-   - Initialiser la base de données avec le script `database/init.sql`
+   - Initialiser automatiquement la base de données avec le script `database/init.php`
    - Cela peut prendre quelques minutes
 
 5. **Accéder à l'application** :
@@ -419,13 +419,24 @@ docker compose down
 
 ### Réinitialisation de la base de données
 
-Si vous avez déjà lancé l'application avant la mise en place de la sécurité renforcée, vous devez réinitialiser la base de données :
+#### Méthode 1 : Réinitialisation rapide (sans supprimer les volumes)
+
+Pour réexécuter uniquement le script d'initialisation :
+
+```bash
+# Supprimer le flag d'initialisation et réexécuter init.php
+docker compose exec php rm -f /tmp/.db_initialized && docker compose exec php php /var/www/database/init.php
+```
+
+#### Méthode 2 : Réinitialisation complète (recommandé)
+
+Pour tout réinitialiser (conteneurs + volumes) :
 
 ```bash
 # Arrêter les conteneurs et supprimer les volumes
 docker compose down -v
 
-# Relancer l'application (la base sera recréée avec les utilisateurs MySQL sécurisés)
+# Relancer l'application (la base sera recréée automatiquement)
 docker compose up
 ```
 
@@ -502,8 +513,8 @@ Les identifiants de connexion MySQL sont gérés de manière sécurisée :
 
 - ✅ Mots de passe stockés uniquement dans `.env` (ignoré par Git)
 - ✅ Injection via variables d'environnement (pas de mots de passe en dur dans le code)
-- ✅ Script d'initialisation `init.sh` qui remplace les variables à la volée
-- ✅ Fichiers SQL commitables sans risque de fuite d'identifiants
+- ✅ Script d'initialisation PHP `init.php` qui utilise les variables d'environnement
+- ✅ Pas de fichiers SQL avec des mots de passe en clair
 
 **Documentation complète** : Voir `database/SECURITY.md` pour plus de détails sur la sécurité de la base de données.
 
@@ -533,9 +544,9 @@ App\Controllers\*   → app/Controllers/
 
 **Initialisation sécurisée de la base** :
 
-- Le script `database/init.sh` injecte les mots de passe depuis les variables d'environnement
-- Les mots de passe ne sont **jamais stockés en dur** dans les fichiers SQL
-- ✅ Le fichier `init.sql` peut être commité sans risque de sécurité
+- Le script `database/init.php` utilise les variables d'environnement pour les mots de passe
+- Les mots de passe ne sont **jamais stockés en dur** dans le code
+- ✅ Gestion centralisée en PHP pour plus de flexibilité et de sécurité
 
 **Tables créées automatiquement** :
 

@@ -11,6 +11,32 @@ else
     echo "✅ Dépendances Composer déjà installées"
 fi
 
+# Attendre que MySQL soit prêt et initialiser la base de données
+echo "⏳ Attente de MySQL..."
+max_attempts=30
+attempt=0
+while ! php -r "try { new PDO('mysql:host=db', 'root', getenv('MYSQL_ROOT_PASSWORD')); echo 'ok'; } catch(Exception \$e) { exit(1); }" 2>/dev/null; do
+    attempt=$((attempt + 1))
+    if [ $attempt -ge $max_attempts ]; then
+        echo "❌ Impossible de se connecter à MySQL après ${max_attempts} tentatives"
+        break
+    fi
+    sleep 1
+done
+
+if [ $attempt -lt $max_attempts ]; then
+    echo "✅ MySQL est prêt"
+    
+    # Exécuter le script d'initialisation uniquement si c'est la première fois
+    if [ ! -f "/tmp/.db_initialized" ]; then
+        echo "🔧 Initialisation de la base de données..."
+        php /var/www/database/init.php
+        touch /tmp/.db_initialized
+    else
+        echo "ℹ️  Base de données déjà initialisée"
+    fi
+fi
+
 # Exécuter la commande passée au conteneur
 exec "$@"
 

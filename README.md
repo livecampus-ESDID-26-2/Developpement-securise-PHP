@@ -6,6 +6,19 @@
 
 ---
 
+## 📝 [Fiche de Révision](docs/fiche-revision.md)
+
+**Pour comprendre rapidement tous les concepts du projet :**
+- 🏗️ Architecture MVC et organisation des dossiers
+- 🎨 Patterns de conception (Singleton, Builder, Decorator)
+- 🔧 Concepts techniques (Autoloader PSR-4, Namespaces, PDO)
+- 🔐 Sécurité (Requêtes préparées, Hash passwords, XSS)
+- 🚀 Flux de l'application
+
+👉 **[Voir la fiche de révision complète](docs/fiche-revision.md)**
+
+---
+
 <div align="center">
 
 <table>

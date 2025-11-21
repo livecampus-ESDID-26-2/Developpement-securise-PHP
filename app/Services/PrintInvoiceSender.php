@@ -1,0 +1,117 @@
+<?php
+
+namespace App\Services;
+
+use App\Entities\Invoice;
+
+/**
+ * Décorateur PrintInvoiceSender - Impression de factures
+ * Pattern Decorator - Ajoute la fonctionnalité d'impression
+ */
+class PrintInvoiceSender extends InvoiceSenderDecorator
+{
+    /**
+     * Imprimer une facture
+     * @param Invoice $invoice Facture à imprimer
+     * @return bool True si succès, false sinon
+     */
+    public function send(Invoice $invoice): bool
+    {
+        // Appeler le comportement de base
+        $result = parent::send($invoice);
+        
+        if (!$result) {
+            return false;
+        }
+        
+        // Ajouter le comportement d'impression
+        return $this->printInvoice($invoice);
+    }
+    
+    /**
+     * Imprimer la facture
+     * @param Invoice $invoice Facture à imprimer
+     * @return bool True si succès, false sinon
+     */
+    private function printInvoice(Invoice $invoice): bool
+    {
+        // Simulation de l'impression
+        // En production, intégrer avec une imprimante réseau ou un service d'impression
+        
+        $printed = $this->generatePrintFile($invoice);
+        
+        if ($printed) {
+            $this->wrappedSender->getLogs()[] = sprintf(
+                "[%s] 🖨️  Facture %s envoyée à l'imprimante",
+                date('Y-m-d H:i:s'),
+                $invoice->getInvoiceNumber()
+            );
+            return true;
+        } else {
+            $this->wrappedSender->getLogs()[] = sprintf(
+                "[%s] ❌ Erreur lors de l'impression",
+                date('Y-m-d H:i:s')
+            );
+            return false;
+        }
+    }
+    
+    /**
+     * Générer un fichier pour l'impression
+     * @param Invoice $invoice Facture
+     * @return bool True si succès
+     */
+    private function generatePrintFile(Invoice $invoice): bool
+    {
+        // Créer un répertoire pour les impressions
+        $printDir = __DIR__ . '/../../storage/prints';
+        
+        if (!is_dir($printDir)) {
+            @mkdir($printDir, 0755, true);
+        }
+        
+        $printFile = $printDir . '/print_' . date('Y-m-d_H-i-s') . '_' . $invoice->getInvoiceNumber() . '.html';
+        
+        // Générer le HTML avec style d'impression
+        $printContent = $this->generatePrintableHtml($invoice);
+        
+        return file_put_contents($printFile, $printContent) !== false;
+        
+        // En production, envoyer à une imprimante réseau :
+        // - Utiliser CUPS sur Linux
+        // - Utiliser l'API Windows Print
+        // - Ou un service d'impression cloud
+    }
+    
+    /**
+     * Générer le HTML optimisé pour l'impression
+     * @param Invoice $invoice Facture
+     * @return string HTML
+     */
+    private function generatePrintableHtml(Invoice $invoice): string
+    {
+        $html = $invoice->toHtml();
+        
+        // Ajouter des styles spécifiques pour l'impression
+        $printStyles = '
+<style media="print">
+    @page {
+        size: A4;
+        margin: 2cm;
+    }
+    body {
+        font-size: 12pt;
+    }
+    .no-print {
+        display: none;
+    }
+</style>
+';
+        
+        // Insérer les styles d'impression dans le HTML
+        $html = str_replace('</head>', $printStyles . '</head>', $html);
+        
+        return $html;
+    }
+}
+

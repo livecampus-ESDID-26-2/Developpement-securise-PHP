@@ -17,6 +17,10 @@ $router->get('/cash-register', [CashRegisterController::class, 'index']);
 $router->post('/cash-register/process', [CashRegisterController::class, 'process']);
 $router->get('/cash-register/history', [CashRegisterController::class, 'history']);
 
+// Routes des factures
+$router->get('/invoice/view', [CashRegisterController::class, 'viewInvoice']);
+$router->post('/invoice/send', [CashRegisterController::class, 'sendInvoice']);
+
 // Routes d'administration
 $router->get('/admin/dashboard', [AdminController::class, 'dashboard']);
 $router->get('/admin/history', [AdminController::class, 'history']);

@@ -15,7 +15,9 @@ fi
 echo "⏳ Attente de MySQL..."
 max_attempts=30
 attempt=0
-while ! php -r "try { new PDO('mysql:host=db', 'root', getenv('MYSQL_ROOT_PASSWORD')); echo 'ok'; } catch(Exception \$e) { exit(1); }" 2>/dev/null; do
+# Utiliser DB_ROOT_PASSWORD si MYSQL_ROOT_PASSWORD n'est pas défini
+ROOT_PWD="${MYSQL_ROOT_PASSWORD:-${DB_ROOT_PASSWORD}}"
+while ! php -r "try { new PDO('mysql:host=db', 'root', '${ROOT_PWD}'); echo 'ok'; } catch(Exception \$e) { exit(1); }" 2>/dev/null; do
     attempt=$((attempt + 1))
     if [ $attempt -ge $max_attempts ]; then
         echo "❌ Impossible de se connecter à MySQL après ${max_attempts} tentatives"

@@ -14,9 +14,9 @@ class Transaction extends Model
     /**
      * Enregistrer une transaction
      * @param array $data Données de la transaction
-     * @return bool True si succès, false sinon
+     * @return int|null ID de la transaction créée ou null si échec
      */
-    public function save(array $data): bool
+    public function save(array $data): ?int
     {
         try {
             $sql = "INSERT INTO {$this->table} (
@@ -42,10 +42,14 @@ class Transaction extends Model
                 'user_id' => $data['user_id'] ?? null
             ];
             
-            return $stmt->execute($params);
+            if ($stmt->execute($params)) {
+                return (int) $this->db->lastInsertId();
+            }
+            
+            return null;
         } catch (\PDOException $e) {
             error_log("Erreur lors de l'enregistrement de la transaction : " . $e->getMessage());
-            return false;
+            return null;
         }
     }
     

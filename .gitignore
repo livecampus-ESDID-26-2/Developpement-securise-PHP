@@ -1,20 +1,25 @@
-# Environnement
-.env
-
-# Composer
-vendor/
+# Dependencies
+/vendor/
 composer.lock
 
-# Docker
-db_data/
+# Environment
+.env
+
+# Storage files (generated invoices)
+storage/emails/*.html
+storage/mail/*.txt
+storage/prints/*.html
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
 
+# Logs
+*.log

@@ -8,20 +8,14 @@
  * - Crée la structure de la base de données
  * - Crée les utilisateurs MySQL avec droits adaptés
  * - Utilise les variables d'environnement pour les mots de passe
- * - Utilise le Builder et l'Entity pour l'état initial de la caisse
+ * - Insère les données initiales
  */
-
-// Chargement de l'autoloader Composer pour accéder aux classes du projet
-require_once __DIR__ . '/../vendor/autoload.php';
-
-use App\Builders\CashRegisterBuilder;
-use App\Entities\CashRegisterState;
 
 echo "🔧 Initialisation de la base de données MySQL...\n";
 
 // Récupération des variables d'environnement
 $dbHost = getenv('DB_HOST') ?: 'db';
-$dbRootPassword = getenv('MYSQL_ROOT_PASSWORD');
+$dbRootPassword = getenv('DB_ROOT_PASSWORD');
 $dbName = getenv('DB_NAME') ?: 'cash';
 $dbPassword = getenv('DB_PASSWORD');
 $dbAdminPassword = getenv('DB_ADMIN_PASSWORD');
@@ -29,7 +23,7 @@ $dbAdminPassword = getenv('DB_ADMIN_PASSWORD');
 // Vérification que les variables d'environnement sont définies
 $errors = [];
 if (empty($dbRootPassword)) {
-    $errors[] = "❌ Erreur : La variable MYSQL_ROOT_PASSWORD n'est pas définie";
+    $errors[] = "❌ Erreur : La variable DB_ROOT_PASSWORD n'est pas définie";
 }
 if (empty($dbPassword)) {
     $errors[] = "❌ Erreur : La variable DB_PASSWORD n'est pas définie";
@@ -119,27 +113,23 @@ try {
         ) ENGINE=INNODB
     ");
 
-    // Insertion de l'état initial de la caisse en utilisant le Builder
-    echo "💵 Insertion de l'état initial de la caisse (via CashRegisterBuilder)...\n";
+    // Insertion de l'état initial de la caisse avec des valeurs par défaut
+    echo "💵 Insertion de l'état initial de la caisse...\n";
     
-    // Créer l'état initial avec les valeurs par défaut du Builder
-    $initialState = CashRegisterBuilder::withDefaults()->build();
-    $stateData = $initialState->toArray();
+    $pdo->exec("
+        INSERT INTO cash_register_state (
+            bill_500, bill_200, bill_100, bill_50, bill_20, bill_10, bill_5,
+            coin_2, coin_1, coin_050, coin_020, coin_010, coin_005, coin_002, coin_001
+        ) VALUES (
+            2, 3, 5, 10, 20, 15, 10,
+            30, 50, 40, 50, 60, 40, 30, 20
+        )
+    ");
     
-    // Préparer les colonnes et valeurs pour l'insertion
-    $columns = array_keys($stateData);
-    $placeholders = array_map(fn($col) => ':' . $col, $columns);
-    
-    $sql = sprintf(
-        "INSERT INTO cash_register_state (%s) VALUES (%s)",
-        implode(', ', $columns),
-        implode(', ', $placeholders)
-    );
-    
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($stateData);
-    
-    echo "   Total en caisse : " . number_format($initialState->getTotalAmount(), 2, ',', ' ') . " €\n";
+    // Calcul du total pour l'affichage
+    $total = (2*500 + 3*200 + 5*100 + 10*50 + 20*20 + 15*10 + 10*5 +
+              30*2 + 50*1 + 40*0.50 + 50*0.20 + 60*0.10 + 40*0.05 + 30*0.02 + 20*0.01);
+    echo "   Total en caisse : " . number_format($total, 2, ',', ' ') . " €\n";
 
     // Création de la table transaction_history
     echo "📜 Création de la table 'transaction_history'...\n";
@@ -157,6 +147,28 @@ try {
             register_after JSON,
             user_id INT,
             FOREIGN KEY (user_id) REFERENCES users(id)
+        ) ENGINE=INNODB
+    ");
+
+    // Création de la table invoices
+    echo "🧾 Création de la table 'invoices' pour les factures...\n";
+    $pdo->exec("
+        CREATE TABLE invoices (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            transaction_id INT NOT NULL,
+            invoice_number VARCHAR(50) NOT NULL UNIQUE,
+            amount_due DECIMAL(10, 2) NOT NULL,
+            amount_given DECIMAL(10, 2) NOT NULL,
+            amount_returned DECIMAL(10, 2) NOT NULL,
+            change_returned JSON,
+            invoice_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            user_id INT,
+            status ENUM('pending', 'sent_email', 'sent_mail', 'printed') DEFAULT 'pending',
+            FOREIGN KEY (transaction_id) REFERENCES transaction_history(id) ON DELETE CASCADE,
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            INDEX idx_invoice_number (invoice_number),
+            INDEX idx_transaction_id (transaction_id),
+            INDEX idx_user_id (user_id)
         ) ENGINE=INNODB
     ");
 

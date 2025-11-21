@@ -1,6 +1,10 @@
 # Environnement
 .env
 
+# Composer
+vendor/
+composer.lock
+
 # Docker
 db_data/
 

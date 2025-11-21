@@ -400,6 +400,7 @@ docker compose up
    La première fois, Docker va :
 
    - Construire l'image PHP avec les extensions PDO MySQL
+   - Installer Composer et les dépendances PHP (autoloader PSR-4)
    - Télécharger l'image MySQL
    - Initialiser la base de données avec le script `database/init.sql`
    - Cela peut prendre quelques minutes

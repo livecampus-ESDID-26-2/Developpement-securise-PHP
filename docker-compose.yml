@@ -6,9 +6,11 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app
-    working_dir: /app
-    command: php -S 0.0.0.0:8000 -t /app
+      - ./app:/var/www/app
+      - ./composer.json:/var/www/composer.json:ro
+      - ./database:/var/www/database:ro
+      - vendor:/var/www/vendor
+    working_dir: /var/www/app
     depends_on:
       - db
     env_file:
@@ -34,3 +36,4 @@ services:
 
 volumes:
   db_data:
+  vendor:

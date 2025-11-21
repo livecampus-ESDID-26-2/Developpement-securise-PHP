@@ -11,11 +11,8 @@ if (session_status() === PHP_SESSION_NONE) {
 // Définition de la racine du projet (dossier app/)
 define('ROOT_PATH', __DIR__);
 
-// Chargement de l'autoloader
-require_once ROOT_PATH . '/Core/Autoloader.php';
-
-// Enregistrement de l'autoloader PSR-4
-App\Core\Autoloader::register();
+// Chargement de l'autoloader Composer
+require_once __DIR__ . '/../vendor/autoload.php';
 
 // Démarrer la session via la classe Session
 App\Core\Session::start();
